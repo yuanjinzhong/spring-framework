@@ -41,6 +41,8 @@ package org.springframework.aop.framework;
  * @author Rod Johnson
  * @author Juergen Hoeller
  */
+// Aop代理对象的工厂,只有一个默认实现,
+// 默认实现里面根据需要代理的对象是否是接口来决定是使用cglib还是jdkDynamic来生成代理对象
 public interface AopProxyFactory {
 
 	/**
