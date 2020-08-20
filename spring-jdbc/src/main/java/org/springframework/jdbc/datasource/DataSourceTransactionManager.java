@@ -250,7 +250,7 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 		return (txObject.hasConnectionHolder() && txObject.getConnectionHolder().isTransactionActive());
 	}
 
-	/**
+	/** codex 核心方法
 	 * This implementation sets the isolation level but ignores the timeout.
 	 */
 	@Override
@@ -283,10 +283,12 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 				if (logger.isDebugEnabled()) {
 					logger.debug("Switching JDBC Connection [" + con + "] to manual commit");
 				}
+				//codex 如果连接为自动提交,则改为手动提交
 				con.setAutoCommit(false);
 			}
 
 			prepareTransactionalConnection(con, definition);
+			//codex 设置连接为激活状态
 			txObject.getConnectionHolder().setTransactionActive(true);
 
 			int timeout = determineTimeout(definition);
@@ -419,14 +421,15 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 	}
 
 
-	/**
+	/**codex 代表一个ConnectionHolder对象,而ConnectionHolder又代表着jdbc的Connection对象
 	 * DataSource transaction object, representing a ConnectionHolder.
 	 * Used as transaction object by DataSourceTransactionManager.
 	 */
 	private static class DataSourceTransactionObject extends JdbcTransactionObjectSupport {
 
 		private boolean newConnectionHolder;
-
+        //codex Spring事务:这个表示spring代理的业务方法走完之后,还需要将当前线程绑定的connection对象设置为自动提交,因为事务代理开始执行业务时,connection会被设置为非自动提交
+		//codex 然后这个connection还是会归还到datasource的,所以必须重置为自动提交
 		private boolean mustRestoreAutoCommit;
 
 		public void setConnectionHolder(@Nullable ConnectionHolder connectionHolder, boolean newConnectionHolder) {

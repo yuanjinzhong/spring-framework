@@ -48,6 +48,7 @@ public interface TransactionStatus extends TransactionExecution, SavepointManage
 	 * @see #createSavepoint()
 	 * @see #rollbackToSavepoint(Object)
 	 * @see #releaseSavepoint(Object)
+	 *codex 判断是否有事务保存点,嵌套事务使用
 	 */
 	boolean hasSavepoint();
 

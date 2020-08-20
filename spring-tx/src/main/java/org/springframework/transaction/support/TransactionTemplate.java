@@ -68,6 +68,13 @@ public class TransactionTemplate extends DefaultTransactionDefinition
 	/** Logger available to subclasses. */
 	protected final Log logger = LogFactory.getLog(getClass());
 
+	/**
+	 * codex  template模板持有数据源管理器,通常是 {@link org.springframework.jdbc.datasource.DataSourceTransactionManager}
+	 *
+	 * codex template对事务的操作都是委托该 事务管理器来执行的
+	 *
+	 * codex 同时事务管理器定义了抽象方法,template来组装这些抽象方法实现事务控制,template的入口方法为:execute方法
+	 */
 	@Nullable
 	private PlatformTransactionManager transactionManager;
 
@@ -124,7 +131,13 @@ public class TransactionTemplate extends DefaultTransactionDefinition
 		}
 	}
 
-
+	/**
+	 * codex 事务的手术尖刀
+	 * @param action the callback object that specifies the transactional action
+	 * @param <T>
+	 * @return
+	 * @throws TransactionException
+	 */
 	@Override
 	@Nullable
 	public <T> T execute(TransactionCallback<T> action) throws TransactionException {
@@ -134,6 +147,7 @@ public class TransactionTemplate extends DefaultTransactionDefinition
 			return ((CallbackPreferringPlatformTransactionManager) this.transactionManager).execute(this, action);
 		}
 		else {
+			//codex 得到事务的各种配置信息
 			TransactionStatus status = this.transactionManager.getTransaction(this);
 			T result;
 			try {

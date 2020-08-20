@@ -78,6 +78,7 @@ import org.springframework.transaction.UnexpectedRollbackException;
  * @see #setTransactionSynchronization
  * @see TransactionSynchronizationManager
  * @see org.springframework.transaction.jta.JtaTransactionManager
+ * codex 可以认为是模板方法模式,只不过这个抽象类只提供方法,不提供方法的组合调用，TransactionTemplate.execute方法对该类方法进行组装
  */
 @SuppressWarnings("serial")
 public abstract class AbstractPlatformTransactionManager implements PlatformTransactionManager, Serializable {

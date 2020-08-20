@@ -33,6 +33,10 @@ import org.springframework.lang.Nullable;
  * @see TransactionProxyFactoryBean#setTransactionAttributeSource
  * @see org.springframework.transaction.annotation.AnnotationTransactionAttributeSource
  */
+
+/** codex 事务配置属性搜索器
+ * codex 用来检索事务的属性配置然后添加到TransactionAttribute实例对象中
+ */
 public interface TransactionAttributeSource {
 
 	/**
