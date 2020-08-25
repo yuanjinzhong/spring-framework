@@ -117,6 +117,7 @@ public abstract class AbstractFallbackTransactionAttributeSource implements Tran
 			else {
 				String methodIdentification = ClassUtils.getQualifiedMethodName(method, targetClass);
 				if (txAttr instanceof DefaultTransactionAttribute) {
+					// codex 设置事务属性的描述符：类名加方法名
 					((DefaultTransactionAttribute) txAttr).setDescriptor(methodIdentification);
 				}
 				if (logger.isTraceEnabled()) {

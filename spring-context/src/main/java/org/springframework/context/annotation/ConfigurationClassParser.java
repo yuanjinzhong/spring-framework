@@ -86,6 +86,13 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 /**
+ *  codex 解析 @Configuration配置类
+ *
+ *  codex 将@Configuration配置类解析为 ConfigurationClass 对象
+ *
+ * codex 可能会解析出来好几个ConfigurationClass对象,因为@configuration类里面会 {@link Import} 其他的  @Configuration
+ *
+ *
  * Parses a {@link Configuration} class definition, populating a collection of
  * {@link ConfigurationClass} objects (parsing a single Configuration class may result in
  * any number of ConfigurationClass objects because one Configuration class may import
@@ -260,6 +267,7 @@ class ConfigurationClassParser {
 	 * @param configClass the configuration class being build
 	 * @param sourceClass a source class
 	 * @return the superclass, or {@code null} if none found or previously processed
+	 * codex 处理@configuration注解(@configuration注解会解析成ConfigurationClass对象)
 	 */
 	@Nullable
 	protected final SourceClass doProcessConfigurationClass(
@@ -306,7 +314,7 @@ class ConfigurationClassParser {
 			}
 		}
 
-		// Process any @Import annotations
+		// codex Process any @Import annotations
 		processImports(configClass, sourceClass, getImports(sourceClass), filter, true);
 
 		// Process any @ImportResource annotations
@@ -549,6 +557,14 @@ class ConfigurationClassParser {
 		}
 	}
 
+	/**
+	 *  codex 初始化过程中 处理@import注解的东东
+	 * @param configClass
+	 * @param currentSourceClass  @configuration对应的配置类会解析成这个东西
+	 * @param importCandidates
+	 * @param exclusionFilter
+	 * @param checkForCircularImports
+	 */
 	private void processImports(ConfigurationClass configClass, SourceClass currentSourceClass,
 			Collection<SourceClass> importCandidates, Predicate<String> exclusionFilter,
 			boolean checkForCircularImports) {
@@ -577,8 +593,10 @@ class ConfigurationClassParser {
 							this.deferredImportSelectorHandler.handle(configClass, (DeferredImportSelector) selector);
 						}
 						else {
+							// codex @import注解导入的ImportSelector类的相关东东
 							String[] importClassNames = selector.selectImports(currentSourceClass.getMetadata());
 							Collection<SourceClass> importSourceClasses = asSourceClasses(importClassNames, exclusionFilter);
+
 							processImports(configClass, currentSourceClass, importSourceClasses, exclusionFilter, false);
 						}
 					}

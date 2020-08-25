@@ -73,7 +73,7 @@ public abstract class AdviceModeImportSelector<A extends Annotation> implements 
 					"@%s is not present on importing class '%s' as expected",
 					annType.getSimpleName(), importingClassMetadata.getClassName()));
 		}
-
+        // codex 判断出 增强的模式,交给子类去处理
 		AdviceMode adviceMode = attributes.getEnum(getAdviceModeAttributeName());
 		String[] imports = selectImports(adviceMode);
 		if (imports == null) {
@@ -91,6 +91,7 @@ public abstract class AdviceModeImportSelector<A extends Annotation> implements 
 	 * advice mode attribute} for the annotation specified via generics.
 	 * @return array containing classes to import (empty array if none;
 	 * {@code null} if the given {@code AdviceMode} is unknown)
+	 * codex 模板方法模式
 	 */
 	@Nullable
 	protected abstract String[] selectImports(AdviceMode adviceMode);

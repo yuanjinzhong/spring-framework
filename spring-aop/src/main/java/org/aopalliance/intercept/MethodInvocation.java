@@ -27,6 +27,7 @@ import java.lang.reflect.Method;
  *
  * @author Rod Johnson
  * @see MethodInterceptor
+ * CODEx  对方法调用的抽象，包装一个方法，这也是一个Joinpoint
  */
 public interface MethodInvocation extends Invocation {
 

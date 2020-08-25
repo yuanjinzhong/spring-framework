@@ -34,6 +34,10 @@ public class DefaultTransactionAttribute extends DefaultTransactionDefinition im
 	@Nullable
 	private String qualifier;
 
+	/**
+	 * codex 事务属性描述符:类名+方法名
+	 * codex 参考{@link org/springframework/transaction/interceptor/AbstractFallbackTransactionAttributeSource.java:120}
+	 */
 	@Nullable
 	private String descriptor;
 

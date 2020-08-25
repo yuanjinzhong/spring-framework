@@ -30,7 +30,9 @@ import org.springframework.lang.Nullable;
  * @see DefaultAopProxyFactory
  */
 
-//最顶级的aop代理对象,有cglib实现,和jdkDynamic实现
+/**
+ * codex 最顶级的aop代理对象,有cglib实现,和jdkDynamic实现
+ */
 public interface AopProxy {
 
 	/**

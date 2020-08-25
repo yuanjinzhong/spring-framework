@@ -32,6 +32,9 @@ import org.springframework.util.Assert;
 @SuppressWarnings("serial")
 public class ProxyCreatorSupport extends AdvisedSupport {
 
+	/**
+	 * codex 创建AopProxy对象
+	 */
 	private AopProxyFactory aopProxyFactory;
 
 	private final List<AdvisedSupportListener> listeners = new LinkedList<>();

@@ -23,7 +23,7 @@ import org.aopalliance.aop.Advice;
  *
  * <p>Spring supports only method before advice. Although this is unlikely to change,
  * this API is designed to allow field advice in future if desired.
- *
+ * codex “前置增强” 标记接口
  * @author Rod Johnson
  * @see AfterAdvice
  */

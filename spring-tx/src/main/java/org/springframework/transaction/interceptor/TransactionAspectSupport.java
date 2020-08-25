@@ -325,6 +325,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 	 * @param invocation the callback to use for proceeding with the target invocation
 	 * @return the return value of the method, if any
 	 * @throws Throwable propagated from the target invocation
+	 * codex 盲猜事务方法的代理对象会调用这个方法
 	 */
 	@Nullable
 	protected Object invokeWithinTransaction(Method method, @Nullable Class<?> targetClass,
@@ -332,6 +333,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 
 		// If the transaction attribute is null, the method is non-transactional.
 		TransactionAttributeSource tas = getTransactionAttributeSource();
+		//codex 获取事务属性(@transaction注解的配置以及隔离级别的配置)
 		final TransactionAttribute txAttr = (tas != null ? tas.getTransactionAttribute(method, targetClass) : null);
 		final TransactionManager tm = determineTransactionManager(txAttr);
 
@@ -354,6 +356,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 		}
 
 		PlatformTransactionManager ptm = asPlatformTransactionManager(tm);
+		//codex  织入点的 类名+方法名
 		final String joinpointIdentification = methodIdentification(method, targetClass, txAttr);
 
 		if (txAttr == null || !(ptm instanceof CallbackPreferringPlatformTransactionManager)) {
@@ -509,12 +512,14 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 		}
 	}
 
+	//codex 其实就是获取织入点的 类名+方法名
 	private String methodIdentification(Method method, @Nullable Class<?> targetClass,
 			@Nullable TransactionAttribute txAttr) {
 
 		String methodIdentification = methodIdentification(method, targetClass);
 		if (methodIdentification == null) {
 			if (txAttr instanceof DefaultTransactionAttribute) {
+				// codex 获取事务属性描述符: 类名+方法名, 在{@link AbstractFallbackTransactionAttributeSource.java:120}赋值
 				methodIdentification = ((DefaultTransactionAttribute) txAttr).getDescriptor();
 			}
 			if (methodIdentification == null) {

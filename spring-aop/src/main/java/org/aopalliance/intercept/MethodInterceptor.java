@@ -36,7 +36,7 @@ package org.aopalliance.intercept;
  *   }
  * }
  * </pre>
- *
+ * codex 方法拦截器&&方法invocation本质上都是对【method】对象的包装
  * @author Rod Johnson
  */
 @FunctionalInterface
@@ -52,6 +52,6 @@ public interface MethodInterceptor extends Interceptor {
 	 * @throws Throwable if the interceptors or the target object
 	 * throws an exception
 	 */
-	Object invoke(MethodInvocation invocation) throws Throwable;
+	Object  invoke(MethodInvocation invocation) throws Throwable;
 
 }

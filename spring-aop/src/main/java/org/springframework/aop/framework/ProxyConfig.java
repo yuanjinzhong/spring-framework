@@ -37,7 +37,9 @@ public class ProxyConfig implements Serializable {
 	private boolean proxyTargetClass = false;
 
 	private boolean optimize = false;
-
+	/**
+	 * codex 翻译: 不透明。 ？？？啥意思
+	 */
 	boolean opaque = false;
 
 	boolean exposeProxy = false;
