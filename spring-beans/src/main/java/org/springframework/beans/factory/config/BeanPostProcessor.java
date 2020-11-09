@@ -48,7 +48,7 @@ import org.springframework.lang.Nullable;
  * taken into account for {@code BeanPostProcessor} beans.
  *
  * @author Juergen Hoeller
- * @author Sam Brannen
+ * @author Sam BrannenEarlyBeanReference
  * @since 10.10.2003
  * @see InstantiationAwareBeanPostProcessor
  * @see DestructionAwareBeanPostProcessor

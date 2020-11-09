@@ -110,7 +110,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @see #setTransactionAttributes
  * @see TransactionInterceptor
  * @see org.springframework.aop.framework.ProxyFactoryBean
- * codex  事务代理很重要的一个类
+ * codex  事务代理很重要的一个类,事务FactoryBean
  */
 @SuppressWarnings("serial")
 public class TransactionProxyFactoryBean extends AbstractSingletonProxyFactoryBean

@@ -361,6 +361,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 
 		if (txAttr == null || !(ptm instanceof CallbackPreferringPlatformTransactionManager)) {
 			// Standard transaction demarcation with getTransaction and commit/rollback calls.
+			//codex 针对指定事务织入点+事务attr+平台事务管理器来创建事务明细
 			TransactionInfo txInfo = createTransactionIfNecessary(ptm, txAttr, joinpointIdentification);
 
 			Object retVal;
@@ -695,7 +696,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 	}
 
 
-	/**
+	/**codex 事务info  包含事务status
 	 * Opaque object used to hold transaction information. Subclasses
 	 * must pass it back to methods on this class, but not see its internals.
 	 */
@@ -706,7 +707,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 
 		@Nullable
 		private final TransactionAttribute transactionAttribute;
-
+         //codex  AOP事务织入点的 类名+方法名
 		private final String joinpointIdentification;
 
 		@Nullable

@@ -87,7 +87,7 @@ import org.springframework.util.ObjectUtils;
  * @see org.aopalliance.intercept.MethodInterceptor
  * @see org.springframework.aop.Advisor
  * @see Advised
- * codex 代理方面很重要的一个类
+ * codex 代理方面很重要的一个类，FactoryBean
  */
 @SuppressWarnings("serial")
 public class ProxyFactoryBean extends ProxyCreatorSupport
