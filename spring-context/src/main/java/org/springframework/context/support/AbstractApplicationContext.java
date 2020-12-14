@@ -519,6 +519,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			// Prepare this context for refreshing.
 			prepareRefresh();
 
+			//codex 告诉子类刷新内部 bean工厂
 			// Tell the subclass to refresh the internal bean factory.
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
@@ -527,6 +528,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 			try {
 				// Allows post-processing of the bean factory in context subclasses.
+				//codex  BeanPostProcessor 相关的处理
 				postProcessBeanFactory(beanFactory);
 
 				//codex Invoke factory processors registered as beans in the context.
@@ -534,6 +536,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
+				//codex 注册bean处理器，拦截bean的创建
 				registerBeanPostProcessors(beanFactory);
 
 				// Initialize message source for this context.

@@ -288,6 +288,7 @@ final class PostProcessorRegistrationDelegate {
 			Collection<? extends BeanFactoryPostProcessor> postProcessors, ConfigurableListableBeanFactory beanFactory) {
 
 		for (BeanFactoryPostProcessor postProcessor : postProcessors) {
+			//codex BeanFactoryPostProcessor 的扩展点
 			postProcessor.postProcessBeanFactory(beanFactory);
 		}
 	}

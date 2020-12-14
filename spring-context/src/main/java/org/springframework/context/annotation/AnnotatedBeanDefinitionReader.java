@@ -48,6 +48,7 @@ import org.springframework.util.Assert;
  */
 public class AnnotatedBeanDefinitionReader {
 
+	//codex 持有register
 	private final BeanDefinitionRegistry registry;
 
 	private BeanNameGenerator beanNameGenerator = AnnotationBeanNameGenerator.INSTANCE;
