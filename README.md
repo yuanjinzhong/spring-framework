@@ -28,3 +28,11 @@ Follow [@SpringCentral](https://twitter.com/springcentral), [@SpringFramework](h
 ## License
 
 The Spring Framework is released under version 2.0 of the [Apache License](https://www.apache.org/licenses/LICENSE-2.0).
+
+***
+# 注意事项
+导入源码之后,点击idea的build按钮, idea 会字节构建项目
+
+不需要安装gradle, idea自带的就可以用
+
+自己增加了一个my-test模块用来源码体调试
