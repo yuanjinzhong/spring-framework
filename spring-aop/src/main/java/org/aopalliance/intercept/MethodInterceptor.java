@@ -16,6 +16,8 @@
 
 package org.aopalliance.intercept;
 
+import org.springframework.aop.framework.ReflectiveMethodInvocation;
+
 /**
  * Intercepts calls on an interface on its way to the target. These
  * are nested "on top" of the target.
@@ -43,6 +45,17 @@ package org.aopalliance.intercept;
 public interface MethodInterceptor extends Interceptor {
 
 	/**
+	 *  <p>方法参数大部分情况下是：{@link  ReflectiveMethodInvocation}
+	 *
+	 *  <p>在当前MethodInterceptor内，通常执行完会调用
+	 *
+	 *  <p>{@link ReflectiveMethodInvocation#proceed}
+	 *
+	 *
+	 *  <p>这就递归的调用起来了，当{@link ReflectiveMethodInvocation} 里面的方法拦截器为空的时候，则会调用{@link Joinpoint}的方法，也就是切点方法本身
+	 *
+	 * <p>{@link Joinpoint} 是指横切逻辑发生的地方
+	 *
 	 * Implement this method to perform extra treatments before and
 	 * after the invocation. Polite implementations would certainly
 	 * like to invoke {@link Joinpoint#proceed()}.

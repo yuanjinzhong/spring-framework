@@ -33,6 +33,10 @@ import org.springframework.transaction.TransactionDefinition;
  * @author Juergen Hoeller
  * @since 08.05.2003
  */
+
+/**
+ * 没啥特别的，就是设置 事务传播行为、隔离级别、超时时间、是否只读
+ */
 @SuppressWarnings("serial")
 public class DefaultTransactionDefinition implements TransactionDefinition, Serializable {
 
@@ -49,6 +53,9 @@ public class DefaultTransactionDefinition implements TransactionDefinition, Seri
 	public static final String READ_ONLY_MARKER = "readOnly";
 
 
+	/**
+	 * 将常量类转换成KV,这个KV维护在Constants里面
+	 */
 	/** Constants instance for TransactionDefinition. */
 	static final Constants constants = new Constants(TransactionDefinition.class);
 

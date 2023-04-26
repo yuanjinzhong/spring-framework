@@ -35,6 +35,11 @@ import org.springframework.aop.framework.adapter.GlobalAdvisorAdapterRegistry;
 import org.springframework.lang.Nullable;
 
 /**
+ *
+ *  加在 方法上的切面 组成的一个chain
+ *
+ *  advice chain on target method
+ *
  * A simple but definitive way of working out an advice chain for a Method,
  * given an {@link Advised} object. Always rebuilds each advice chain;
  * caching can be provided by subclasses.
@@ -47,6 +52,11 @@ import org.springframework.lang.Nullable;
 @SuppressWarnings("serial")
 public class DefaultAdvisorChainFactory implements AdvisorChainFactory, Serializable {
 
+
+	/**
+	 * 将用户自定义的切面放到 interceptorList这个集合里面， 后续遍历集合调用 MethodInterceptor.invoke方法
+	 * @return
+	 */
 	@Override
 	public List<Object> getInterceptorsAndDynamicInterceptionAdvice(
 			Advised config, Method method, @Nullable Class<?> targetClass) {
@@ -55,15 +65,24 @@ public class DefaultAdvisorChainFactory implements AdvisorChainFactory, Serializ
 		// but we need to preserve order in the ultimate list.
 		AdvisorAdapterRegistry registry = GlobalAdvisorAdapterRegistry.getInstance();
 		Advisor[] advisors = config.getAdvisors();
+		//一个个methodInterceptor，或者说advice
 		List<Object> interceptorList = new ArrayList<>(advisors.length);
 		Class<?> actualClass = (targetClass != null ? targetClass : method.getDeclaringClass());
 		Boolean hasIntroductions = null;
 
+		/**
+		 * 将用户自定义的切面放到 interceptorList这个集合里面， 后续遍历集合调用 MethodInterceptor.invoke方法
+		 */
 		for (Advisor advisor : advisors) {
+			/**
+			 * PointcutAdvisor这个advisor里面持有{@link org.springframework.aop.Pointcut}，这个是有match语义的； 所以接下来处理当前方法和pointCut是否匹配
+			 */
 			if (advisor instanceof PointcutAdvisor) {
 				// Add it conditionally.
 				PointcutAdvisor pointcutAdvisor = (PointcutAdvisor) advisor;
+				//类是否匹配
 				if (config.isPreFiltered() || pointcutAdvisor.getPointcut().getClassFilter().matches(actualClass)) {
+					//方法是否匹配
 					MethodMatcher mm = pointcutAdvisor.getPointcut().getMethodMatcher();
 					boolean match;
 					if (mm instanceof IntroductionAwareMethodMatcher) {
@@ -76,6 +95,9 @@ public class DefaultAdvisorChainFactory implements AdvisorChainFactory, Serializ
 						match = mm.matches(method, actualClass);
 					}
 					if (match) {
+						/**
+						 * 如果类和方法都匹配上了，则将{@link MethodInterceptor}加到集合里面形成一个{@link chain}
+						 */
 						MethodInterceptor[] interceptors = registry.getInterceptors(advisor);
 						if (mm.isRuntime()) {
 							// Creating a new object instance in the getInterceptors() method
@@ -98,6 +120,9 @@ public class DefaultAdvisorChainFactory implements AdvisorChainFactory, Serializ
 				}
 			}
 			else {
+				/**
+				 * 说白了就是将advisor转换成Interceptor 或者说Advice 或者说 MethodInterceptor
+				 */
 				Interceptor[] interceptors = registry.getInterceptors(advisor);
 				interceptorList.addAll(Arrays.asList(interceptors));
 			}

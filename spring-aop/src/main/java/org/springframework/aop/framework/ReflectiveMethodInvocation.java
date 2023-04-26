@@ -161,12 +161,18 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 		// We start with an index of -1 and increment early.
 		// codex 一开始当前拦截器下标是-1,若这个判断成立,则表示没有拦截器
 		if (this.currentInterceptorIndex == this.interceptorsAndDynamicMethodMatchers.size() - 1) {
-			//codex 则直接调用不走切面代理
+			/**
+			 * 表示没有拦截器，直接调用不走切面代理
+			 */
 			return invokeJoinpoint();
 		}
 
 		Object interceptorOrInterceptionAdvice =
 				this.interceptorsAndDynamicMethodMatchers.get(++this.currentInterceptorIndex);
+		/**
+		 * {@link DefaultAdvisorChainFactory#getInterceptorsAndDynamicInterceptionAdvice}
+		 * 该类的该方法创建了{@link InterceptorAndDynamicMethodMatcher}
+		 */
 		if (interceptorOrInterceptionAdvice instanceof InterceptorAndDynamicMethodMatcher) {
 			// Evaluate dynamic method matcher here: static part will already have
 			// been evaluated and found to match.
@@ -183,6 +189,9 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 			}
 		}
 		else {
+			/**
+			 * 这边this 是个递归调用，内部好会走到 当前的proceed()方法
+			 */
 			// It's an interceptor, so we just invoke it: The pointcut will have
 			// been evaluated statically before this object was constructed.
 			return ((MethodInterceptor) interceptorOrInterceptionAdvice).invoke(this);

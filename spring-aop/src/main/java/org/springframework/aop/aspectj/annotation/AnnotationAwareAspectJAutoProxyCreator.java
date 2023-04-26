@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -28,8 +29,12 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
+ * 处理@aspectj注解
+ *
  * {@link AspectJAwareAdvisorAutoProxyCreator} subclass that processes all AspectJ
  * annotation aspects in the current application context, as well as Spring Advisors.
+ *
+ * 任何AspectJ标注的注解将会被识别，对应的 advice 将会被应用
  *
  * <p>Any AspectJ annotated classes will automatically be recognized, and their
  * advice applied if Spring AOP's proxy-based model is capable of applying it.
@@ -52,6 +57,9 @@ public class AnnotationAwareAspectJAutoProxyCreator extends AspectJAwareAdvisorA
 	@Nullable
 	private List<Pattern> includePatterns;
 
+	/**
+	 * 这个接口的实现类处理各种 aspectj注解：{@link  Pointcut , Around , Before.class, After.class, AfterReturning.class, AfterThrowing.class};}
+	 */
 	@Nullable
 	private AspectJAdvisorFactory aspectJAdvisorFactory;
 

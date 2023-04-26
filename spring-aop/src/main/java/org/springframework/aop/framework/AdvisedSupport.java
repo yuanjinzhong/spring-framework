@@ -90,12 +90,15 @@ public class AdvisedSupport extends ProxyConfig implements Advised {
 	private List<Class<?>> interfaces = new ArrayList<>();
 
 	/**
+	 * 用户定义的切面的最终形态，会放到该集合里面
 	 * List of Advisors. If an Advice is added, it will be wrapped
 	 * in an Advisor before being added to this List.
 	 */
 	private List<Advisor> advisors = new ArrayList<>();
 
 	/**
+	 * 上面的List<Advisor> advisors 转换成数组
+	 *
 	 * Array updated on changes to the advisors list, which is easier
 	 * to manipulate internally.
 	 */
@@ -242,6 +245,10 @@ public class AdvisedSupport extends ProxyConfig implements Advised {
 	}
 
 
+	/**
+	 * 实现的{@link Advised}
+	 * @return
+	 */
 	@Override
 	public final Advisor[] getAdvisors() {
 		return this.advisorArray;
@@ -469,6 +476,11 @@ public class AdvisedSupport extends ProxyConfig implements Advised {
 
 
 	/**
+	 *
+	 * 返回 MethodInterceptor的集合；；；MethodInterceptor.invoke方法是我们自定义 的切面逻辑
+	 *
+	 *
+	 *
 	 * Determine a list of {@link org.aopalliance.intercept.MethodInterceptor} objects
 	 * for the given method, based on this configuration.
 	 * @param method the proxied method

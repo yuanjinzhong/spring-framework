@@ -34,6 +34,11 @@ import org.springframework.transaction.TransactionStatus;
 public interface TransactionOperations {
 
 	/**
+	 *
+	 * 执行传入的回调函数， 定义回调函数的意义在于： 将方法签名统一起来
+	 *
+	 *当回调方法抛出RuntimeException时，会导致事务回滚
+	 *
 	 * Execute the action specified by the given callback object within a transaction.
 	 * <p>Allows for returning a result object created within the transaction, that is,
 	 * a domain object or a collection of domain objects. A RuntimeException thrown

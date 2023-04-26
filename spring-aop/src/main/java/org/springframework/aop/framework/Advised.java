@@ -22,10 +22,16 @@ import org.springframework.aop.Advisor;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.aop.TargetSource;
 
-/**
- * Interface to be implemented by classes that hold the configuration
+/** <p> aop代理工厂的配置
+ *
+ * <p> spring 容器中获取到的aop 代理 都可以转换成该对象 {@link  Advised}
+ *<p>
+ *<p>
+ * <p> Interface to be implemented by classes that hold the configuration
  * of a factory of AOP proxies. This configuration includes the
  * Interceptors and other advice, Advisors, and the proxied interfaces.
+ *
+ *
  *
  * <p>Any AOP proxy obtained from Spring can be cast to this interface to
  * allow manipulation of its AOP advice.
@@ -44,6 +50,7 @@ public interface Advised extends TargetClassAware {
 	boolean isFrozen();
 
 	/**
+	 *  强制走CGLIb
 	 * Are we proxying the full target class instead of specified interfaces?
 	 */
 	boolean isProxyTargetClass();
@@ -73,6 +80,8 @@ public interface Advised extends TargetClassAware {
 	TargetSource getTargetSource();
 
 	/**
+	 * 本次方法调用期间 代理对象被绑定到 {@link AopContext.currentProxy} 上
+	 * <p>
 	 * Set whether the proxy should be exposed by the AOP framework as a
 	 * {@link ThreadLocal} for retrieval via the {@link AopContext} class.
 	 * <p>It can be necessary to expose the proxy if an advised object needs
@@ -83,6 +92,8 @@ public interface Advised extends TargetClassAware {
 	void setExposeProxy(boolean exposeProxy);
 
 	/**
+	 * * 本次方法调用期间 代理对象被绑定到 {@link AopContext.currentProxy} 上
+	 * 	 * <p>
 	 * Return whether the factory should expose the proxy as a {@link ThreadLocal}.
 	 * <p>It can be necessary to expose the proxy if an advised object needs
 	 * to invoke a method on itself with advice applied. Otherwise, if an

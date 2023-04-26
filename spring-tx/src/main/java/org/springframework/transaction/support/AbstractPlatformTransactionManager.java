@@ -345,6 +345,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 		// Use defaults if no transaction definition given.
 		TransactionDefinition def = (definition != null ? definition : TransactionDefinition.withDefaults());
 
+		//先获取到事务
 		Object transaction = doGetTransaction();
 		boolean debugEnabled = logger.isDebugEnabled();
 
@@ -353,6 +354,11 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 			return handleExistingTransaction(def, transaction, debugEnabled);
 		}
 
+		/**
+		 *
+		 * 事务隔离级别传播行为一通处理
+		 *
+		 */
 		// Check definition settings for new transaction.
 		if (def.getTimeout() < TransactionDefinition.TIMEOUT_DEFAULT) {
 			throw new InvalidTimeoutException("Invalid transaction timeout", def.getTimeout());

@@ -44,6 +44,12 @@ import org.springframework.util.ReflectionUtils;
  * @author Juergen Hoeller
  * @since 16.03.2003
  */
+
+
+/**
+ * 将常量类转换成KV,这个KV维护在Constants里面
+ */
+
 public class Constants {
 
 	/** The name of the introspected class. */
@@ -64,6 +70,9 @@ public class Constants {
 		this.className = clazz.getName();
 		Field[] fields = clazz.getFields();
 		for (Field field : fields) {
+			/**
+			 * 当前field 是常量则维护到KV里面
+			 */
 			if (ReflectionUtils.isPublicStaticFinal(field)) {
 				String name = field.getName();
 				try {

@@ -74,6 +74,8 @@ public final class AopContext {
 	}
 
 	/**
+	 * 同一时刻是能有一个代理对象绑定在线程上，则设置新代理对象的时候肯定需要将旧的代理对象取出来
+	 *
 	 * Make the given proxy available via the {@code currentProxy()} method.
 	 * <p>Note that the caller should be careful to keep the old value as appropriate.
 	 * @param proxy the proxy to expose (or {@code null} to reset it)

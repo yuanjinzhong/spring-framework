@@ -45,6 +45,11 @@ import org.springframework.lang.Nullable;
  */
 public interface PlatformTransactionManager extends TransactionManager {
 
+
+
+	//根据当前的传播行为,返回当前事务,或者创建一个新的事务;
+	//事务的隔离级别和超时 只会应用到新的事务上, 因此当前已经存在的事务会忽略这两个参数
+	//此外有的事务管理器是不支持特定的事务配置的,遇到不支持的配置的时候,事务管理器需要抛出异常!
 	/**
 	 * Return a currently active transaction or create a new one, according to
 	 * the specified propagation behavior.
@@ -101,14 +106,29 @@ public interface PlatformTransactionManager extends TransactionManager {
 	void commit(TransactionStatus status) throws TransactionException;
 
 	/**
+	 *针对给定的事务执行回滚， 如果给定的事务不是新的事务，
+	 *
+	 * 则将TransactionStatus设置为rollback-only （这是父接口的方法，TransactionExecution里面的）
+	 *
+	 * 如果为了创建新的事务导致之前的事务被挂起（suspended），则在这个新的事务被rollback之后需要恢复（resume）之前的事务
+	 *
+	 *
+	 *
 	 * Perform a rollback of the given transaction.
 	 * <p>If the transaction wasn't a new one, just set it rollback-only for proper
 	 * participation in the surrounding transaction. If a previous transaction
 	 * has been suspended to be able to create a new one, resume the previous
 	 * transaction after rolling back the new one.
+	 *
+	 *
+	 * 事务调用commit方法之后，就不可以再调用rollback方法（事务一旦commit之后，就会completed 和clean up ，再调用rollback肯定会失败）
+	 *
+	 * 再调用rollback会抛出异常：IllegalTransactionStateException
+	 *
+	 *
 	 * <p><b>Do not call rollback on a transaction if commit threw an exception.</b>
 	 * The transaction will already have been completed and cleaned up when commit
-	 * returns, even in case of a commit exception. Consequently, a rollback call
+	 * returns, even in case of a commit exception. Consequently（因此）, a rollback call
 	 * after commit failure will lead to an IllegalTransactionStateException.
 	 * @param status object returned by the {@code getTransaction} method
 	 * @throws TransactionSystemException in case of rollback or system errors

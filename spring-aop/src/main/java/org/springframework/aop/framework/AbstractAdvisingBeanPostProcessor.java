@@ -39,6 +39,7 @@ public abstract class AbstractAdvisingBeanPostProcessor extends ProxyProcessorSu
 
 	protected boolean beforeExistingAdvisors = false;
 
+	// eligible : 符合条件的
 	private final Map<Class<?>, Boolean> eligibleBeans = new ConcurrentHashMap<>(256);
 
 
@@ -82,6 +83,13 @@ public abstract class AbstractAdvisingBeanPostProcessor extends ProxyProcessorSu
 			}
 		}
 
+		/**
+		 * 这里就是给spring bean 创建代理的核心了
+		 *
+		 * Base class for {@link BeanPostProcessor} implementations that apply a
+		 *  * Spring AOP {@link Advisor} to specific beans.
+		 *
+		 */
 		if (isEligible(bean, beanName)) {
 			ProxyFactory proxyFactory = prepareProxyFactory(bean, beanName);
 			if (!proxyFactory.isProxyTargetClass()) {
@@ -92,6 +100,7 @@ public abstract class AbstractAdvisingBeanPostProcessor extends ProxyProcessorSu
 			return proxyFactory.getProxy(getProxyClassLoader());
 		}
 
+		//也有可能不创建代理
 		// No proxy needed.
 		return bean;
 	}

@@ -34,16 +34,32 @@ public class ProxyConfig implements Serializable {
 	private static final long serialVersionUID = -8409359707199703185L;
 
 
+	/**
+	 * 如果true,强制走cglib代理
+	 */
 	private boolean proxyTargetClass = false;
 
+	/**
+	 * 如果优化(true)，则走Cglib代理
+	 */
 	private boolean optimize = false;
 	/**
-	 * codex 翻译: 不透明。 ？？？啥意思
+	 * codex 翻译: 不透明。
+	 *
+	 * <p>true 表示任何代理对象不能被强制转换为 {@link Advised}
+	 *
+	 * <p> Default is "false", meaning that any AOP proxy can be cast to {@link Advised}.
 	 */
 	boolean opaque = false;
 
+	/**
+	 * 如果暴露代理对象，则塞到threadLocal里面 {@link AopContext.setCurrentProxy}
+	 */
 	boolean exposeProxy = false;
 
+	/**
+	 * 冻结，表示该配置对象的属性不可以被改变
+	 */
 	private boolean frozen = false;
 
 

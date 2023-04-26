@@ -41,6 +41,18 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.transaction.support.DefaultTransactionDefinition
  * @see org.springframework.transaction.interceptor.TransactionAttribute
  */
+
+/**
+ * 接口是对行为的抽象！！！
+ *
+ * 事务定义接口主要定义了四件事情：
+ * 1、隔离级别
+ * 2、传播行为
+ * 3、超时时间配置
+ * 4、是否只读
+ *
+ */
+
 public interface TransactionDefinition {
 
 	/**

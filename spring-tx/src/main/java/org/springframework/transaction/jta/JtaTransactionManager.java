@@ -117,6 +117,9 @@ import org.springframework.util.StringUtils;
  * @see #setTransactionManager
  * @see WebLogicJtaTransactionManager
  */
+// 感觉是分布式事务管理器；  JTA 规范衍生； java transaction api
+// 不用学习，这是一个很古老、很重的协议
+
 @SuppressWarnings("serial")
 public class JtaTransactionManager extends AbstractPlatformTransactionManager
 		implements TransactionFactory, InitializingBean, Serializable {

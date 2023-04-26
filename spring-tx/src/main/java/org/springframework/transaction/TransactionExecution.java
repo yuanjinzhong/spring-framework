@@ -24,6 +24,7 @@ package org.springframework.transaction;
  * @author Juergen Hoeller
  * @since 5.2
  */
+//codex 表示事务的当前状态
 public interface TransactionExecution {
 
 	/**

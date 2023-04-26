@@ -61,6 +61,7 @@ import org.springframework.util.Assert;
  * @see #setTransactionManager
  * @see org.springframework.transaction.PlatformTransactionManager
  */
+// 被spring boot 自动注入，本身也是transactionDefinition，所以有一些事务的基础属性、隔离级别、传播行为等
 @SuppressWarnings("serial")
 public class TransactionTemplate extends DefaultTransactionDefinition
 		implements TransactionOperations, InitializingBean {
@@ -131,6 +132,22 @@ public class TransactionTemplate extends DefaultTransactionDefinition
 		}
 	}
 
+
+	/**
+	 *
+	 * TransactionTemplate.execute(),来实现编程式事务，
+	 *
+	 *        try {
+	 *             transactionTemplate.executeWithoutResult(transactionStatus -> {
+	 *                 // 更新 状态
+	 *                 freightSubOrderDomainService.onGoing(freightSubOrder, orderFundInfo.getApAmount(), fulfillmentTriggerCommand.getDeleteLuckyPacket(),fulfillmentTriggerCommand.getKkvMap());
+	 *                 // 事件持久化
+	 *                 pickupNotificationEventDomainService.create(freightSubOrder, fulfillmentTriggerCommand.getDriverId());
+	 *             });
+	 *         } catch (Throwable t) {
+	 *             log.error("更新新模型失败, 订单号:{}, 子单号:{}, 错误信息:{}", freightSubOrder.getOrderNo(), freightSubOrder.getSubOrderNo(), t);
+	 *         }
+	 */
 	/**
 	 * codex 事务的手术尖刀
 	 * @param action the callback object that specifies the transactional action
@@ -163,6 +180,7 @@ public class TransactionTemplate extends DefaultTransactionDefinition
 				rollbackOnException(status, ex);
 				throw new UndeclaredThrowableException(ex, "TransactionCallback threw undeclared checked exception");
 			}
+			//根据status的状态，commit方法内部可能会rollback
 			this.transactionManager.commit(status);
 			return result;
 		}

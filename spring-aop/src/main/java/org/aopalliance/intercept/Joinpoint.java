@@ -35,7 +35,7 @@ import java.lang.reflect.AccessibleObject;
  * the static joinpoint.
  *
  * @author Rod Johnson
- * @see Interceptor
+ * @see Interceptor        横切逻辑发生的地方，叫做JoinPoint
  * codex Joinpoint：织入点,所有可能的pointcut的集合,当一个advice(增强)被apply到这个织入点的时候,那么这个joinpoint被称之为pointcut
  */
 public interface Joinpoint {

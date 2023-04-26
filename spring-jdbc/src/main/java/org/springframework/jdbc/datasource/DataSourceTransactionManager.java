@@ -283,7 +283,7 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 				if (logger.isDebugEnabled()) {
 					logger.debug("Switching JDBC Connection [" + con + "] to manual commit");
 				}
-				//codex 如果连接为自动提交,则改为手动提交
+				//codex 如果连接为自动提交,则改为手动提交；因为手动提交才能搞事务那一套操作额；不然每个connection上的操作都自动提交就没有事务的事情了
 				con.setAutoCommit(false);
 			}
 
@@ -297,6 +297,7 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 			}
 
 			// Bind the connection holder to the thread.
+			//当前线程、数据源、sqlSession绑定
 			if (txObject.isNewConnectionHolder()) {
 				TransactionSynchronizationManager.bindResource(obtainDataSource(), txObject.getConnectionHolder());
 			}
@@ -338,9 +339,14 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 		}
 	}
 
+	/**
+	 *  被AbstractPlatformTransactionManager里面的模板方法调用
+	 * @param status the status representation of the transaction
+	 */
 	@Override
 	protected void doRollback(DefaultTransactionStatus status) {
 		DataSourceTransactionObject txObject = (DataSourceTransactionObject) status.getTransaction();
+		//最终还是从当前线程中取出jdbc connection对象
 		Connection con = txObject.getConnectionHolder().getConnection();
 		if (status.isDebug()) {
 			logger.debug("Rolling back JDBC transaction on Connection [" + con + "]");
@@ -429,7 +435,7 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 
 		private boolean newConnectionHolder;
         //codex Spring事务:这个表示spring代理的业务方法走完之后,还需要将当前线程绑定的connection对象设置为自动提交,因为事务代理开始执行业务时,connection会被设置为非自动提交
-		//codex 然后这个connection还是会归还到datasource的,所以必须重置为自动提交
+		//codex 然后这个connection还是会归还到datasource的（给别的线程使用）,所以必须重置为自动提交
 		private boolean mustRestoreAutoCommit;
 
 		public void setConnectionHolder(@Nullable ConnectionHolder connectionHolder, boolean newConnectionHolder) {

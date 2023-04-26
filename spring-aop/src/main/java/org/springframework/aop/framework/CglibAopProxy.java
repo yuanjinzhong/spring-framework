@@ -647,11 +647,20 @@ class CglibAopProxy implements AopProxy, Serializable {
 
 
 	/**
+	 *
+	 * 这个 MethodInterceptor 不是aop联盟的 MethodInterceptor，是cglib的callback
+	 *
+	 *
 	 * General purpose AOP callback. Used when the target is dynamic or when the
 	 * proxy is not frozen.
 	 */
 	private static class DynamicAdvisedInterceptor implements MethodInterceptor, Serializable {
 
+		/**
+		 * 看到这个其实可以理解的，cglib在增强方法的时候，调用 {@link  AdvisedSupport} 里面维护的 {@link List<Advisor> advisors}
+		 *
+		 * 等价于调用aop联盟的{@link  org.aopalliance.intercept.MethodInterceptor}
+		 */
 		private final AdvisedSupport advised;
 
 		public DynamicAdvisedInterceptor(AdvisedSupport advised) {
@@ -666,6 +675,7 @@ class CglibAopProxy implements AopProxy, Serializable {
 			Object target = null;
 			TargetSource targetSource = this.advised.getTargetSource();
 			try {
+				//如果暴露代理对象，则塞到threadLocal里面
 				if (this.advised.exposeProxy) {
 					// Make invocation available if necessary.
 					oldProxy = AopContext.setCurrentProxy(proxy);
@@ -674,6 +684,11 @@ class CglibAopProxy implements AopProxy, Serializable {
 				// Get as late as possible to minimize the time we "own" the target, in case it comes from a pool...
 				target = targetSource.getTarget();
 				Class<?> targetClass = (target != null ? target.getClass() : null);
+				/**
+				 *   {@link this.advised } 当前代理工厂中 切面配置
+				 *
+				 *   从切面配置中获取{@link  MethodInterceptor} 的 集合
+				 */
 				List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
 				Object retVal;
 				// Check whether we only have one InvokerInterceptor: that is,
@@ -687,6 +702,9 @@ class CglibAopProxy implements AopProxy, Serializable {
 					retVal = methodProxy.invoke(target, argsToUse);
 				}
 				else {
+					/**
+					 * {@link  MethodInterceptor} 的 集合 包装成一个{@link  CglibMethodInvocation} 并且级联调用  {@link  MethodInterceptor}
+					 */
 					// We need to create a method invocation...
 					retVal = new CglibMethodInvocation(proxy, target, method, args, targetClass, chain, methodProxy).proceed();
 				}
@@ -697,7 +715,11 @@ class CglibAopProxy implements AopProxy, Serializable {
 				if (target != null && !targetSource.isStatic()) {
 					targetSource.releaseTarget(target);
 				}
+				//子方法调用完，还需要将父方法的代理对象绑回去到线程上
 				if (setProxyContext) {
+					/**
+					 * 方法调用肯定是嵌套着调用的，子方法调用完，还需要将父方法的代理对象绑回去到线程上
+					 */
 					// Restore old proxy.
 					AopContext.setCurrentProxy(oldProxy);
 				}

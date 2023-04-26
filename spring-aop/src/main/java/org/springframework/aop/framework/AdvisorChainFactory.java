@@ -22,7 +22,7 @@ import java.util.List;
 import org.springframework.lang.Nullable;
 
 /**
- * Factory interface for advisor chains.
+ * Factory interface for advisor chains.  切面组成的chain!!!!
  *
  * @author Rod Johnson
  * @author Juergen Hoeller
@@ -37,6 +37,14 @@ public interface AdvisorChainFactory {
 	 * @param targetClass the target class (may be {@code null} to indicate a proxy without
 	 * target object, in which case the method's declaring class is the next best option)
 	 * @return a List of MethodInterceptors (may also include InterceptorAndDynamicMethodMatchers)
+	 */
+	/**
+	 *  返回切面、方法拦截的集合
+	 *
+	 * @param config  切面的配置， 以{@link  Advised} 对象组织
+	 * @param method  目标方法
+	 * @param targetClass 目标类
+	 * @return 返回 {@link  org.aopalliance.intercept.MethodInterceptor} 的集合
 	 */
 	List<Object> getInterceptorsAndDynamicInterceptionAdvice(Advised config, Method method, @Nullable Class<?> targetClass);
 

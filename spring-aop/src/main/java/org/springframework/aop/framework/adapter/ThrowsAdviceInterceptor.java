@@ -61,6 +61,9 @@ public class ThrowsAdviceInterceptor implements MethodInterceptor, AfterAdvice {
 	private static final Log logger = LogFactory.getLog(ThrowsAdviceInterceptor.class);
 
 
+	/**
+	 * 从advice 创建 methodIntercept
+	 */
 	private final Object throwsAdvice;
 
 	/** Methods on throws advice, keyed by exception class. */
@@ -68,6 +71,8 @@ public class ThrowsAdviceInterceptor implements MethodInterceptor, AfterAdvice {
 
 
 	/**
+	 *  动态的，用advice 创建 methodintercept
+	 *
 	 * Create a new ThrowsAdviceInterceptor for the given ThrowsAdvice.
 	 * @param throwsAdvice the advice object that defines the exception handler methods
 	 * (usually a {@link org.springframework.aop.ThrowsAdvice} implementation)

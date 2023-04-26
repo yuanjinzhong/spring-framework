@@ -34,6 +34,7 @@ package org.springframework.transaction;
  * @see TransactionDefinition#PROPAGATION_NESTED
  * @see java.sql.Savepoint
  */
+//用来处理嵌套事务的
 public interface SavepointManager {
 
 	/**

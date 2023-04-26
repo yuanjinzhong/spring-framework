@@ -347,6 +347,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 			return bean;
 		}
 
+		/**
+		 * 如果有advice(切面增强)，则创建代理对象； 所以被spring管理的bean不一定是代理对象，得看类上、方法上是否有代理对象
+		 */
 		// Create proxy if we have advice.
 		Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
 		if (specificInterceptors != DO_NOT_PROXY) {
