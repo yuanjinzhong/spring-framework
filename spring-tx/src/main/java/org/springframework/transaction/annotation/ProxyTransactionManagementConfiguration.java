@@ -20,6 +20,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
+import org.springframework.transaction.config.AnnotationDrivenBeanDefinitionParser;
 import org.springframework.transaction.config.TransactionManagementConfigUtils;
 import org.springframework.transaction.interceptor.BeanFactoryTransactionAttributeSourceAdvisor;
 import org.springframework.transaction.interceptor.TransactionAttributeSource;
@@ -39,12 +40,31 @@ import org.springframework.transaction.interceptor.TransactionInterceptor;
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class ProxyTransactionManagementConfiguration extends AbstractTransactionManagementConfiguration {
 
+
+	/**
+	 * 这个本质上就是一个{@link org.springframework.aop.Advisor} 或者再确切一点就是{@link  org.springframework.aop.PointcutAdvisor}
+	 *
+	 *
+	 * 使用的地方见：{@link  AnnotationDrivenBeanDefinitionParser.AopAutoProxyConfigurer}
+	 *
+	 * 感觉是将这个{@link  org.springframework.aop.PointcutAdvisor} 绑定到beandefinition上
+	 * @param transactionAttributeSource
+	 * @param transactionInterceptor
+	 * @return
+	 */
 	@Bean(name = TransactionManagementConfigUtils.TRANSACTION_ADVISOR_BEAN_NAME)
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	public BeanFactoryTransactionAttributeSourceAdvisor transactionAdvisor(
 			TransactionAttributeSource transactionAttributeSource, TransactionInterceptor transactionInterceptor) {
 
 		BeanFactoryTransactionAttributeSourceAdvisor advisor = new BeanFactoryTransactionAttributeSourceAdvisor();
+		/**
+		 * 这个{@link  transactionAttributeSource }里面绑定了{@link Transactional}
+		 *
+		 * {@link  Transactional} 和{@link  org.springframework.aop.Pointcut} 和 {@link org.aopalliance.intercept.MethodInterceptor} 绑定在一起
+		 *
+		 * 组成了{@link org.springframework.aop.Pointcut}
+		 */
 		advisor.setTransactionAttributeSource(transactionAttributeSource);
 		advisor.setAdvice(transactionInterceptor);
 		if (this.enableTx != null) {

@@ -50,6 +50,10 @@ import org.springframework.transaction.TransactionManager;
  * @see org.springframework.aop.framework.ProxyFactoryBean
  * @see org.springframework.aop.framework.ProxyFactory
  */
+
+/**
+ * 详细见：{@link  org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration} 在这个自动配置类被使用
+ */
 @SuppressWarnings("serial")
 public class TransactionInterceptor extends TransactionAspectSupport implements MethodInterceptor, Serializable {
 
