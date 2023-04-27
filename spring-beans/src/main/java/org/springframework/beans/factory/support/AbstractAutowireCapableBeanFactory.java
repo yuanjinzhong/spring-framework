@@ -429,6 +429,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		 * codex factory里面会遍历调用processor
 		 */
 		Object result = existingBean;
+		/**
+		 * {@link org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator} 这个 Bpp很重要，会创建代理对象
+		 * 上面是抽象的BPP,直接使用的是这个BPP {@link  org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator}
+		 *
+		 */
 		for (BeanPostProcessor processor : getBeanPostProcessors()) {
 			/**codex 会创建代理哈
 			 * codex 会创建事务代理,参阅:org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator#postProcessAfterInitialization(java.lang.Object, java.lang.String)
@@ -1118,8 +1123,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 				Class<?> targetType = determineTargetType(beanName, mbd);
 				if (targetType != null) {
+					//实例化之前：委托InstantiationAwareBeanPostProcessor
 					bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
 					if (bean != null) {
+						//初始化之后：委托BPP
 						bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
 					}
 				}

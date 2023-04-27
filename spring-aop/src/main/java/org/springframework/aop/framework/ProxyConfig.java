@@ -109,6 +109,7 @@ public class ProxyConfig implements Serializable {
 	}
 
 	/**
+	 * 表示是否可以强转成 {@link  Advised}
 	 * Set whether proxies created by this configuration should be prevented
 	 * from being cast to {@link Advised} to query proxy status.
 	 * <p>Default is "false", meaning that any AOP proxy can be cast to

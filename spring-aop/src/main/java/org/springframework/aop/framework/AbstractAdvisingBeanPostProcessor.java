@@ -20,11 +20,15 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.aop.Advisor;
+import org.springframework.aop.framework.autoproxy.AbstractAdvisorAutoProxyCreator;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.lang.Nullable;
 
 /**
+ *
+ * 给自定的bean配置代理，和{@link  AbstractAdvisorAutoProxyCreator } 不冲突
+ *
  * Base class for {@link BeanPostProcessor} implementations that apply a
  * Spring AOP {@link Advisor} to specific beans.
  *
@@ -68,7 +72,9 @@ public abstract class AbstractAdvisingBeanPostProcessor extends ProxyProcessorSu
 			// Ignore AOP infrastructure such as scoped proxies.
 			return bean;
 		}
-
+		/**
+		 * bean是否已经代理增强过， 则不再层层包装代理，而是将bean强专成Advised之后，将自定义的advisor添加到List<advisor>里面
+		 */
 		if (bean instanceof Advised) {
 			Advised advised = (Advised) bean;
 			if (!advised.isFrozen() && isEligible(AopUtils.getTargetClass(bean))) {
@@ -84,6 +90,8 @@ public abstract class AbstractAdvisingBeanPostProcessor extends ProxyProcessorSu
 		}
 
 		/**
+		 * 没代理增强过，就继续生成代理
+		 *
 		 * 这里就是给spring bean 创建代理的核心了
 		 *
 		 * Base class for {@link BeanPostProcessor} implementations that apply a

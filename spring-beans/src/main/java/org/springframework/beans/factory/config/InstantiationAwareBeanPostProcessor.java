@@ -40,7 +40,7 @@ import org.springframework.lang.Nullable;
  *
  * @author Juergen Hoeller
  * @author Rod Johnson
- * @since 1.2
+ * @since 1.2  实力化Aware的Bpp
  * @see org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator#setCustomTargetSourceCreators
  * @see org.springframework.aop.framework.autoproxy.target.LazyInitTargetSourceCreator
  */
@@ -70,7 +70,7 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 	 * @see org.springframework.beans.factory.support.AbstractBeanDefinition#getBeanClass()
 	 * @see org.springframework.beans.factory.support.AbstractBeanDefinition#getFactoryMethodName()
 	 */
-	@Nullable
+	@Nullable        // 实力化，  BPP的那个父亲接口是初始化
 	default Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
 		return null;
 	}

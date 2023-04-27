@@ -137,6 +137,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 
 	private final Map<Object, Class<?>> proxyTypes = new ConcurrentHashMap<>(16);
 
+	/**
+	 * 当前object是否需要被代理
+	 */
 	private final Map<Object, Boolean> advisedBeans = new ConcurrentHashMap<>(256);
 
 
@@ -253,7 +256,11 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 				return null;
 			}
 		}
-
+		/**
+		 * 如果有{@link TargetSource}，则也会创建代理
+		 *
+		 * 这边也会创建代理
+		 */
 		// Create proxy here if we have a custom TargetSource.
 		// Suppresses unnecessary default instantiation of the target bean:
 		// The TargetSource will handle target instances in a custom fashion.
@@ -287,6 +294,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	}
 
 	/**
+	 *  这边会创建代理
 	 * Create a proxy with the configured interceptors if the bean is
 	 * identified as one to proxy by the subclass.
 	 * @see #getAdvicesAndAdvisorsForBean
@@ -352,6 +360,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		 */
 		// Create proxy if we have advice.
 		Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
+		//找不到增强就不需要代理
 		if (specificInterceptors != DO_NOT_PROXY) {
 			this.advisedBeans.put(cacheKey, Boolean.TRUE);
 			Object proxy = createProxy(
@@ -359,7 +368,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 			this.proxyTypes.put(cacheKey, proxy.getClass());
 			return proxy;
 		}
-
+        // 表示当前bean 不需要被代理
 		this.advisedBeans.put(cacheKey, Boolean.FALSE);
 		return bean;
 	}

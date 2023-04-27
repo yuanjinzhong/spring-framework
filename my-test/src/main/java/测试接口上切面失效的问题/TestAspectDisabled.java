@@ -30,9 +30,6 @@ public class TestAspectDisabled {
 
         String update = demoMapper.update();
 
-
-        System.out.println("update方法返回值:"+update);
-
     }
 
 }
