@@ -90,6 +90,9 @@ public class BeanFactoryAdvisorRetrievalHelper {
 				}
 				else {
 					try {
+						/**
+						 * 这里找到 事务自动配置里面配置的{@link BeanFactoryTransactionAttributeSourceAdvisor}
+						 */
 						advisors.add(this.beanFactory.getBean(name, Advisor.class));
 					}
 					catch (BeanCreationException ex) {

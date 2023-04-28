@@ -20,7 +20,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
-import org.springframework.transaction.config.AnnotationDrivenBeanDefinitionParser;
 import org.springframework.transaction.config.TransactionManagementConfigUtils;
 import org.springframework.transaction.interceptor.BeanFactoryTransactionAttributeSourceAdvisor;
 import org.springframework.transaction.interceptor.TransactionAttributeSource;
@@ -73,11 +72,23 @@ public class ProxyTransactionManagementConfiguration extends AbstractTransaction
 		return advisor;
 	}
 
+
+	/**
+	 * 绑定了{@link Transactional} 注解
+	 * @return
+	 */
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	public TransactionAttributeSource transactionAttributeSource() {
 		return new AnnotationTransactionAttributeSource();
 	}
+
+
+	/**
+	 * 定义事务拦截器，绑定到上面的PointCutAdvisor
+	 * @param transactionAttributeSource
+	 * @return
+	 */
 
 	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)

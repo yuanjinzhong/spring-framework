@@ -42,6 +42,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.interceptor.BeanFactoryTransactionAttributeSourceAdvisor;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.testfixture.CallCountingTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -313,6 +314,7 @@ class EnableTransactionManagementIntegrationTests {
 		@Override
 		@Transactional
 		public List<Object> findAll() {
+			System.out.println("当前事务隔离级别："+TransactionSynchronizationManager.getCurrentTransactionIsolationLevel());
 			return Collections.emptyList();
 		}
 	}

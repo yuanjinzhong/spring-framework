@@ -52,6 +52,8 @@ import org.springframework.transaction.TransactionManager;
  */
 
 /**
+ * 作为一个MethodInterceptor 被绑定到 {@lin BeanFactoryTransactionAttributeSourceAdvisor} 这个
+ *
  * 详细见：{@link  org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration} 在这个自动配置类被使用
  */
 @SuppressWarnings("serial")

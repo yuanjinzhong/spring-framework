@@ -536,7 +536,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				postProcessBeanFactory(beanFactory);
 
 				//codex Invoke factory processors registered as beans in the context.
-				// @configuration 也是在这里面处理
+				/**
+				 *   bean 工厂处理器
+				 *   @configuration 也是在这里面处理    {@link  org.springframework.context.annotation.ConfigurationClassPostProcessor}
+				 */
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
@@ -712,6 +715,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * <p>Must be called before singleton instantiation.
 	 */
 	protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
+		/**
+		 * 这里是{@link BeanFactoryPostProcessor} 不是{@link BeanPostProcessor}
+		 */
 		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
 
 		// Detect a LoadTimeWeaver and prepare for weaving, if found in the meantime
