@@ -19,8 +19,12 @@ public class MyConfig {
 	}
 
 
+	/**
+	 * 换成object 会监听到其他系统消息
+	 * @param event
+	 */
 	@EventListener
-	public void listen(Object event){
-		System.out.println("****XXXXXXXX"+event);
+	public void listen(String event){
+		System.out.println("监听者收到消息:"+event);
 	}
 }

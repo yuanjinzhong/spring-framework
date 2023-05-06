@@ -543,7 +543,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
-				//codex 注册bean处理器，拦截bean的创建
+				//codex 注册BPP，拦截bean的创建
 				registerBeanPostProcessors(beanFactory);
 
 				// Initialize message source for this context.
@@ -558,6 +558,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				// Check for listener beans and register them.
 				registerListeners();
 
+				/**
+				 * 实例化所以剩余的单例（延迟加载的）
+				 * 遍历内部的beanDefinitionNames集合，来实例化；
+				 * 会调用到 {@link  org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory}的创建bean方法
+				 */
 				// Instantiate all remaining (non-lazy-init) singletons.
 				finishBeanFactoryInitialization(beanFactory);
 
@@ -889,6 +894,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// Allow for caching all bean definition metadata, not expecting further changes.
 		beanFactory.freezeConfiguration();
 
+		/**
+		 * 实例化所以剩余的单例（延迟加载的）
+		 * 遍历内部的beanDefinitionNames集合，来实例化；
+		 * 会调用到 {@link  org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory}的创建bean方法
+		 */
 		// Instantiate all remaining (non-lazy-init) singletons.
 		beanFactory.preInstantiateSingletons();
 	}

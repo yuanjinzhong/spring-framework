@@ -173,7 +173,10 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	private final Set<String> alreadyCreated = Collections.newSetFromMap(new ConcurrentHashMap<>(256));
 
 
-	// 正在创建中的bean 会被绑定到这个线程中
+	/**
+	 * 正在创建中的bean 会被绑定到这个线程中,用来检测循环依赖
+	 * {@link java.lang.ThreadLocal.ThreadLocalMap} 的value 可能是个set集合
+	 */
 	/** Names of beans that are currently in creation. */
 	private final ThreadLocal<Object> prototypesCurrentlyInCreation =
 			new NamedThreadLocal<>("Prototype beans currently in creation");
@@ -263,8 +266,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		}
 
 		else {
-			// Fail if we're already creating this bean instance:
-			// We're assumably within a circular reference.
+			/**
+			 * 发生循环依赖，
+			 * Fail if we're already creating this bean instance:
+			 * We're assumably within a circular reference.
+			 */
 			if (isPrototypeCurrentlyInCreation(beanName)) {
 				throw new BeanCurrentlyInCreationException(beanName);
 			}
@@ -275,6 +281,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				// Not found -> check parent.
 				String nameToLookup = originalBeanName(name);
 				if (parentBeanFactory instanceof AbstractBeanFactory) {
+					// 到父bean工厂寻找
 					return ((AbstractBeanFactory) parentBeanFactory).doGetBean(
 							nameToLookup, requiredType, args, typeCheckOnly);
 				}
@@ -401,17 +408,6 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	}
 
 	@Override
-	public boolean containsBean(String name) {
-		String beanName = transformedBeanName(name);
-		if (containsSingleton(beanName) || containsBeanDefinition(beanName)) {
-			return (!BeanFactoryUtils.isFactoryDereference(name) || isFactoryBean(name));
-		}
-		// Not found -> check parent.
-		BeanFactory parentBeanFactory = getParentBeanFactory();
-		return (parentBeanFactory != null && parentBeanFactory.containsBean(originalBeanName(name)));
-	}
-
-	@Override
 	public boolean isSingleton(String name) throws NoSuchBeanDefinitionException {
 		String beanName = transformedBeanName(name);
 
@@ -433,23 +429,40 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		}
 
 		RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
-
+		// 对于FactoryBean，如果没有解引用，则返回所创建对象的单例状态。
 		// In case of FactoryBean, return singleton status of created object if not a dereference.
 		if (mbd.isSingleton()) {
 			if (isFactoryBean(beanName, mbd)) {
 				if (BeanFactoryUtils.isFactoryDereference(name)) {
 					return true;
 				}
+				/**
+				 * {@link FACTORY_BEAN_PREFIX}用来取地址，也就是获取{@lin FactoryBean} 实例本身
+				 */
 				FactoryBean<?> factoryBean = (FactoryBean<?>) getBean(FACTORY_BEAN_PREFIX + beanName);
 				return factoryBean.isSingleton();
 			}
 			else {
+				/**
+				 * 如果当前传入的 bean的名字是 & 开头，则认为是{@link FactoryBean}的解引用
+				 */
 				return !BeanFactoryUtils.isFactoryDereference(name);
 			}
 		}
 		else {
 			return false;
 		}
+	}
+
+	@Override
+	public boolean containsBean(String name) {
+		String beanName = transformedBeanName(name);
+		if (containsSingleton(beanName) || containsBeanDefinition(beanName)) {
+			return (!BeanFactoryUtils.isFactoryDereference(name) || isFactoryBean(name));
+		}
+		// Not found -> check parent.
+		BeanFactory parentBeanFactory = getParentBeanFactory();
+		return (parentBeanFactory != null && parentBeanFactory.containsBean(originalBeanName(name)));
 	}
 
 	@Override

@@ -16,8 +16,10 @@
 
 package org.springframework.beans.factory;
 
-/**
+/** 循环依赖
  * Exception thrown in case of a reference to a bean that's currently in creation.
+ * 当前bean构造器注入依赖的属性，正在创建中，正在创建中的这个属性也是构造器注入，且依赖当前正在创建的bean
+ * 死循环，无解，报错
  * Typically happens when constructor autowiring matches the currently constructed bean.
  *
  * @author Juergen Hoeller

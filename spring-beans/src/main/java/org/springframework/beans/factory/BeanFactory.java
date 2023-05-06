@@ -116,7 +116,24 @@ import org.springframework.lang.Nullable;
  */
 public interface BeanFactory {
 
-	/**
+
+	/** 解构用的
+	 * <p>详细见文档：
+	 * <p>When you need to ask a container for an actual FactoryBean instance itself instead of the bean it produces,
+	 * <p>prefix the bean’s id with the ampersand symbol (&) when calling the getBean() method of the ApplicationContext.
+	 * <p>So, for
+	 *
+	 * <p>a given FactoryBean with an id of myBean, invoking getBean("myBean") on the container returns the product of the FactoryBean,
+	 *
+	 * <p>whereas invoking getBean("&myBean") returns the FactoryBean instance itself.
+	 *
+	 * <p>如果一个FactoryBean的名字是"myBean",调用BeanFactory的getBean("myBean")方法时，返回的是FactoryBean.getObject()生产的对象，
+	 *
+	 * <p>调用getBean("&myBean")时，返回的是FactoryBean 的实例本身，。。。。可以类比取地址符号
+	 *
+	 *<p>
+	 * {@link  org/springframework/beans/factory/support/AbstractBeanFactory.java:442}
+	 *<p>
 	 * Used to dereference a {@link FactoryBean} instance and distinguish it from
 	 * beans <i>created</i> by the FactoryBean. For example, if the bean named
 	 * {@code myJndiObject} is a FactoryBean, getting {@code &myJndiObject}
@@ -269,6 +286,10 @@ public interface BeanFactory {
 	boolean isSingleton(String name) throws NoSuchBeanDefinitionException;
 
 	/**
+	 * true: 每次返回的bean实例都是新创建的，不是单例
+	 *
+	 * false：不一定返回单例对象，
+	 *
 	 * Is this bean a prototype? That is, will {@link #getBean} always return
 	 * independent instances?
 	 * <p>Note: This method returning {@code false} does not clearly indicate
