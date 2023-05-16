@@ -181,6 +181,14 @@ public class EventListenerMethodProcessor
 							if (applicationListener instanceof ApplicationListenerMethodAdapter) {
 								((ApplicationListenerMethodAdapter) applicationListener).init(context, this.evaluator);
 							}
+							/**
+							 * 这里放进去了，在这里使用{@link AbstractApplicationContext#registerListeners()}
+							 *
+							 * 最终是调用{@link ApplicationEventMulticaster#addApplicationListener(ApplicationListener)}方法
+							 *
+							 * 将监听者和多播器绑定
+							 *
+							 */
 							context.addApplicationListener(applicationListener);
 							break;
 						}

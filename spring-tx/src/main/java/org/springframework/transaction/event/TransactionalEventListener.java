@@ -26,6 +26,11 @@ import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.AliasFor;
 
 /**
+ *  事件监听在消息可以指定在事务的某个阶段（{@link TransactionPhase}）发送消息
+ *
+ *  如果事件被发送时不在一个事务区间内，这个事件会被丢弃； 除非{@link #fallbackExecution}标志位被设置位true
+ *
+ *
  * An {@link EventListener} that is invoked according to a {@link TransactionPhase}.
  *
  * <p>If the event is not published within an active transaction, the event is discarded

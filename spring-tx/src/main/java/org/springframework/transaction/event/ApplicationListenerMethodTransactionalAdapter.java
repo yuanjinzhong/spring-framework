@@ -84,6 +84,13 @@ class ApplicationListenerMethodTransactionalAdapter extends ApplicationListenerM
 	}
 
 
+	/**
+	 * 这是个{@link TransactionSynchronization}
+	 *
+	 * 内部的方法和{@link org.springframework.transaction.support.AbstractPlatformTransactionManager}里面事务股价方法绑定
+	 *
+	 * 从而实现在事务的某个阶段{@link TransactionPhase} 执行对应逻辑
+	 */
 	private static class TransactionSynchronizationEventAdapter extends TransactionSynchronizationAdapter {
 
 		private final ApplicationListenerMethodAdapter listener;

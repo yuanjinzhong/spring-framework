@@ -127,6 +127,12 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 		multicastEvent(event, resolveDefaultEventType(event));
 	}
 
+	/**
+	 *  这个方法是循环调用{@link  ApplicationListener#onApplicationEvent(ApplicationEvent)} 方法
+	 *  对外表现就是 监听者监听到消息了
+	 * @param event the event to multicast
+	 * @param eventType the type of event (can be {@code null}) 消息的Class类型
+	 */
 	@Override
 	public void multicastEvent(final ApplicationEvent event, @Nullable ResolvableType eventType) {
 		ResolvableType type = (eventType != null ? eventType : resolveDefaultEventType(event));

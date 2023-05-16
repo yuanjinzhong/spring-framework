@@ -21,6 +21,13 @@ import java.lang.reflect.Method;
 import org.springframework.context.ApplicationListener;
 
 /**
+ * {@link EventListener} 这玩意是加在方法上的，
+ *
+ * 这里把方法转换成 ApplicationListener 对象
+ *
+ *
+ * 调用逻辑在{@link  EventListenerMethodProcessor}
+ *
  * Strategy interface for creating {@link ApplicationListener} for methods
  * annotated with {@link EventListener}.
  *

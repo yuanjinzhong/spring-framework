@@ -35,7 +35,10 @@ import org.springframework.lang.Nullable;
 public interface SingletonBeanRegistry {
 
 	/**
-	 * Register the given existing object as singleton in the bean registry,
+	 * <p>将该对象作为一个单例bean 注册到 registry里面
+	 *
+	 * <p>这个给定的实例被认为是完全初始化好的的，且不会执行任何 bean生命周期的回调方法了
+	 * <p> Register the given existing object as singleton in the bean registry,
 	 * under the given bean name.
 	 * <p>The given instance is supposed to be fully initialized; the registry
 	 * will not perform any initialization callbacks (in particular, it won't

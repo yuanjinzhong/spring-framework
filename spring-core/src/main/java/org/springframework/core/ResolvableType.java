@@ -42,11 +42,14 @@ import org.springframework.util.ConcurrentReferenceHashMap;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-/**
+/** Encapsulates 封装，   封装反射里面的type
  * Encapsulates a Java {@link java.lang.reflect.Type}, providing access to
  * {@link #getSuperType() supertypes}, {@link #getInterfaces() interfaces}, and
  * {@link #getGeneric(int...) generic parameters} along with the ability to ultimately
+ * <p>提供一些终极能力，最终变成Class对象</p>
  * {@link #resolve() resolve} to a {@link java.lang.Class}.
+ *
+ * <p>提供了一些简单的方法将反射包里面的Field Method、Class 变成ResolvableTypes</p>
  *
  * <p>{@code ResolvableTypes} may be obtained from {@link #forField(Field) fields},
  * {@link #forMethodParameter(Method, int) method parameters},

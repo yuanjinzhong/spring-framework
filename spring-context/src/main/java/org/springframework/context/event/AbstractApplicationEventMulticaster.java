@@ -411,7 +411,10 @@ public abstract class AbstractApplicationEventMulticaster
 
 
 	/**
+	 * 帮助类，封装 监听器的集合  <p>允许高效检索每个监听器</p>
+	 *
 	 * Helper class that encapsulates a specific set of target listeners,
+	 *
 	 * allowing for efficient retrieval of pre-filtered listeners.
 	 * <p>An instance of this helper gets cached per event type and source type.
 	 */
@@ -427,6 +430,10 @@ public abstract class AbstractApplicationEventMulticaster
 			this.preFiltered = preFiltered;
 		}
 
+		/**
+		 *  从 beanFactory里面获取 {@link ApplicationListener} 放置到集合里面
+		 * @return
+		 */
 		public Collection<ApplicationListener<?>> getApplicationListeners() {
 			List<ApplicationListener<?>> allListeners = new ArrayList<>(
 					this.applicationListeners.size() + this.applicationListenerBeans.size());
@@ -435,6 +442,7 @@ public abstract class AbstractApplicationEventMulticaster
 				BeanFactory beanFactory = getBeanFactory();
 				for (String listenerBeanName : this.applicationListenerBeans) {
 					try {
+						// 从bean工厂获取 ApplicationListener对象
 						ApplicationListener<?> listener = beanFactory.getBean(listenerBeanName, ApplicationListener.class);
 						if (this.preFiltered || !allListeners.contains(listener)) {
 							allListeners.add(listener);

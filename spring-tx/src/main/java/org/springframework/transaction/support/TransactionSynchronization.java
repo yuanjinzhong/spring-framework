@@ -18,7 +18,7 @@ package org.springframework.transaction.support;
 
 import java.io.Flushable;
 
-/**
+/** 事务同步器，可以理解为回调方法
  * Interface for transaction synchronization callbacks.
  * Supported by AbstractPlatformTransactionManager.
  *

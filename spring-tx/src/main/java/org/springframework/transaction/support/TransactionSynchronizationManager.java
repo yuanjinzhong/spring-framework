@@ -81,7 +81,7 @@ public abstract class TransactionSynchronizationManager {
 	private static final ThreadLocal<Map<Object, Object>> resources =
 			new NamedThreadLocal<>("Transactional resources");
 
-	//表示当前线程有事务同步
+	//表示当前线程有事务同步，TransactionSynchronization接口有行为，可以理解成回调方法（在平台事务管理器里面调用）
 	private static final ThreadLocal<Set<TransactionSynchronization>> synchronizations =
 			new NamedThreadLocal<>("Transaction synchronizations");
 
