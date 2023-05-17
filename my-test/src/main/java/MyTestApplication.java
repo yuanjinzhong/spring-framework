@@ -13,6 +13,8 @@ import service.UserService;
 import spring动态代理测试用到的类.Interceptor.OrderServiceIntercept;
 import spring动态代理测试用到的类.service.OrderService;
 import spring动态代理测试用到的类.service.impl.OrderServiceImpl;
+import 循环依赖.A;
+import 循环依赖.B;
 
 /**
  * @author yjz
@@ -23,9 +25,15 @@ public class MyTestApplication {
 	@Test
 	public  void testGetBean() {
         //测试refresh方法
-		ApplicationContext context = new AnnotationConfigApplicationContext(MyConfig.class);
+		ApplicationContext context = new AnnotationConfigApplicationContext(MyConfig.class, A.class, B.class);
 		UserService userService = context.getBean(UserService.class);
 		userService.say();
+
+
+		//测试循环依赖  Is there an unresolvable circular reference?
+		context.getBean(A.class);
+		context.getBean(B.class);
+
 
 		//测试发布事件,MyConfig.class里面消费
 		context.publishEvent("我是发出的消息");
