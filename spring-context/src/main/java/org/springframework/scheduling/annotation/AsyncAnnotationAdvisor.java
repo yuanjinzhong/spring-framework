@@ -150,6 +150,9 @@ public class AsyncAnnotationAdvisor extends AbstractPointcutAdvisor implements B
 	protected Advice buildAdvice(
 			@Nullable Supplier<Executor> executor, @Nullable Supplier<AsyncUncaughtExceptionHandler> exceptionHandler) {
 
+		/**
+		 * 异步的方法拦截， 在这个{@link org.aopalliance.intercept.MethodInterceptor} 找 线程池（根据名字找）
+		 */
 		AnnotationAsyncExecutionInterceptor interceptor = new AnnotationAsyncExecutionInterceptor(null);
 		interceptor.configure(executor, exceptionHandler);
 		return interceptor;

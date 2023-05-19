@@ -162,6 +162,8 @@ public abstract class AbstractApplicationEventMulticaster
 	}
 
 	/**
+	 * 从 beanFactory里面获取 {@link ApplicationListener}
+	 *
 	 * Return a Collection of ApplicationListeners matching the given
 	 * event type. Non-matching listeners get excluded early.
 	 * @param event the event to be propagated. Allows for excluding

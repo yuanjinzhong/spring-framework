@@ -9,24 +9,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class A {
 
-    /**
-     * 在配置允许循环依赖的情况下，
-     *
-     * 下面2中set方式的循环依赖是可以注入成功的
-     */
+	/**
+	 * 在配置允许循环依赖的情况下，
+	 * <p>
+	 * 下面2中set方式的循环依赖是可以注入成功的
+	 */
 
-   // @Autowired
-    private B b;
-
-
-    @Autowired
-    public void setB(B b) {
-        this.b = b;
-    }
+	// @Autowired
+	private B b;
 
 
-    @Autowired
-    public A(B b) {
-        this.b = b;
-    }
+//	@Autowired
+//	public void setB(B b) {
+//		this.b = b;
+//	}
+
+    // 导致循环依赖
+//	@Autowired
+//	public A(B b) {
+//		this.b = b;
+//	}
 }

@@ -55,7 +55,10 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Async {
 
+
 	/**
+	 *  配置线程池的名字
+	 *
 	 * A qualifier value for the specified asynchronous operation(s).
 	 * <p>May be used to determine the target executor to be used when executing
 	 * the asynchronous operation(s), matching the qualifier value (or the bean

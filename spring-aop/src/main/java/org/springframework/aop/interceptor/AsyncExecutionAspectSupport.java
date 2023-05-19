@@ -164,6 +164,9 @@ public abstract class AsyncExecutionAspectSupport implements BeanFactoryAware {
 		AsyncTaskExecutor executor = this.executors.get(method);
 		if (executor == null) {
 			Executor targetExecutor;
+			/**
+			 * {@link org.springframework.scheduling.annotation.Async#value() } 这个值是设置 线程执行器的名字，获取到名字然后到beanFactory里面去找
+			 */
 			String qualifier = getExecutorQualifier(method);
 			if (StringUtils.hasLength(qualifier)) {
 				targetExecutor = findQualifiedExecutor(this.beanFactory, qualifier);
@@ -176,6 +179,9 @@ public abstract class AsyncExecutionAspectSupport implements BeanFactoryAware {
 			}
 			executor = (targetExecutor instanceof AsyncListenableTaskExecutor ?
 					(AsyncListenableTaskExecutor) targetExecutor : new TaskExecutorAdapter(targetExecutor));
+			/**、
+			 *  方法和线程池 映射； 等于缓存，省的去beanFactory里面找线程池了
+			 */
 			this.executors.put(method, executor);
 		}
 		return executor;

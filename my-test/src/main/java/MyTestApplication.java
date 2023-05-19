@@ -6,15 +6,23 @@ import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.PayloadApplicationEvent;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.SimpleApplicationEventMulticaster;
+import org.springframework.core.ResolvableType;
 import service.UserService;
 import spring动态代理测试用到的类.Interceptor.OrderServiceIntercept;
 import spring动态代理测试用到的类.service.OrderService;
 import spring动态代理测试用到的类.service.impl.OrderServiceImpl;
 import 循环依赖.A;
 import 循环依赖.B;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author yjz
@@ -82,7 +90,42 @@ public class MyTestApplication {
 
 
 
+
+
+
+	@Test
+	@DisplayName("测试一些ResolveType的用法")
+	public void testResolveType(){
+		Child child = new Child();
+		child.setAge(20);
+		child.setName("张三");
+		ApplicationEvent applicationEvent = new PayloadApplicationEvent<>(this, child);
+		ResolvableType eventType = ((PayloadApplicationEvent<?>) applicationEvent).getResolvableType();
+	}
+
+
+
+
+
+	@Test
+	@DisplayName("测试事件监听-事件多播-异步监听-errorHandle")
+	public void simpleApplicationEventMulticasterWithTaskExecutor() {
+		@SuppressWarnings("unchecked")
+		ApplicationListener<ApplicationEvent> listener = (x)-> {
+			throw  new RuntimeException("222");
+		};
+		ApplicationEvent	applicationEvent = new PayloadApplicationEvent<>(this, "我是测试消息");
+		SimpleApplicationEventMulticaster smc = new SimpleApplicationEventMulticaster();
+		ExecutorService executorService = Executors.newFixedThreadPool(2);
+		smc.setTaskExecutor(executorService);
+		smc.addApplicationListener(listener);
+		smc.multicastEvent(applicationEvent);
+	}
+
 }
+
+
+
 
  class Child {
 
@@ -123,6 +166,7 @@ class  HelloService{
 		System.out.println("*******hello*******");
 	}
 }
+
 
 @Configuration
  class RootConfig {

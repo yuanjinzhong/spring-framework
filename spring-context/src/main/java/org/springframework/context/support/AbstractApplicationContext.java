@@ -211,6 +211,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	@Nullable
 	private ApplicationEventMulticaster applicationEventMulticaster;
 
+	/**
+	 * 事件多播会往集合添加监听者
+	 *
+	 * ApplicationListenerDetector#postProcessAfterInitialization() 这个BPP也会添加
+	 *
+	 */
 	/** Statically specified listeners. */
 	private final Set<ApplicationListener<?>> applicationListeners = new LinkedHashSet<>();
 
@@ -401,10 +407,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			this.earlyApplicationEvents.add(applicationEvent);
 		}
 		else {
+
 			/**
-			 * 这边的发消息和正常理解的发消息不一样，正常理解的发消息是{@link ApplicationEventPublisher#publishEvent(Object)}来发消息
+			 * 使用者使用{@link ApplicationEventPublisher#publishEvent(Object)}来发消息
 			 *
-			 * 这边直接使用'事件多播'，多播里面维护着{@link ApplicationListener}列表， 直接调用{@link ApplicationListener#onApplicationEvent(ApplicationEvent)} 方法
+			 * 消费者方法{@link ApplicationListener#onApplicationEvent(ApplicationEvent)} 消费消息
+			 *
+			 * 内部其实是 '事件多播'调用监听者的 onApplicationEvent方法
 			 *
 			 */
 			getApplicationEventMulticaster().multicastEvent(applicationEvent, eventType);
@@ -563,6 +572,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				initMessageSource();
 
 				/**
+				 * 多播器挺重要啊，这个方法骨架里面单独整了一个很显眼的方法调用
+				 *
 				 * 给application设置多播器，
 				 * bean 工厂没提供applicationEventMulticaster，则使用默认的SimpleApplicationEventMulticaster
 				 * Initialize event multicaster for this context.
@@ -575,10 +586,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 
 				/**
-				 * 将{@link ApplicationListener} 注册到多播器上，并且调用了一下
-				 * {@link ApplicationListener#onApplicationEvent(ApplicationEvent)} 方法
-				 * 发送早期的应用事件：earlyApplicationEvents
-				 * Check for listener beans and register them.
+				 *
+				 * 系统的{@link ApplicationListener} 加入多播，注册到多播器上，并且调用了一下{@link ApplicationListener#onApplicationEvent(ApplicationEvent)} 方法
+				 *
+				 * 用户的{@link ApplicationListener}、{@link EventListener}是在 {@link EventListenerMethodProcessor} 这个BPP中加入多播的
+				 *
 				 */
 				registerListeners();
 
@@ -587,6 +599,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				 * 遍历内部的beanDefinitionNames集合，来实例化；
 				 * 会调用到 {@link  org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory}的创建bean方法
 				 * Instantiate all remaining (non-lazy-init) singletons.
+				 *
+				 * 调用BPP
+				 *
 				 */
 				finishBeanFactoryInitialization(beanFactory);
 
@@ -706,6 +721,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		beanFactory.registerResolvableDependency(ApplicationEventPublisher.class, this);
 		beanFactory.registerResolvableDependency(ApplicationContext.class, this);
 
+		/**
+		 * 这个BPP 是为了 将框架内部定义的{@link ApplicationListener} 添加到上下文中
+		 */
 		// Register early post-processor for detecting inner beans as ApplicationListeners.
 		beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(this));
 
@@ -887,6 +905,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			getApplicationEventMulticaster().addApplicationListener(listener);
 		}
 
+		/**
+		 * 这时候有beandefinition吗？能取到吗？
+		 */
 		// Do not initialize FactoryBeans here: We need to leave all regular beans
 		// uninitialized to let post-processors apply to them!
 		String[] listenerBeanNames = getBeanNamesForType(ApplicationListener.class, true, false);
@@ -894,6 +915,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			getApplicationEventMulticaster().addApplicationListenerBean(listenerBeanName);
 		}
 
+		/**
+		 * 只是发送早期的event,用户的消息 永远是publish为起点
+		 */
 		// Publish early application events now that we finally have a multicaster...
 		Set<ApplicationEvent> earlyEventsToProcess = this.earlyApplicationEvents;
 		this.earlyApplicationEvents = null;
