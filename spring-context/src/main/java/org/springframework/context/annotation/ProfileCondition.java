@@ -36,6 +36,12 @@ class ProfileCondition implements Condition {
 		MultiValueMap<String, Object> attrs = metadata.getAllAnnotationAttributes(Profile.class.getName());
 		if (attrs != null) {
 			for (Object value : attrs.get("value")) {
+				/**
+				 * {@link Profile}注解指定的环境值是否等于环境上下文中激活的环境，等于的话，该条件匹配，该配置激活
+				 *
+				 * context.getEnvironment()里面激活的profile肯定是先有值的
+				 *
+				 */
 				if (context.getEnvironment().acceptsProfiles(Profiles.of((String[]) value))) {
 					return true;
 				}

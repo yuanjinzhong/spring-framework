@@ -122,6 +122,8 @@ public @interface ComponentScan {
 	String resourcePattern() default ClassPathScanningCandidateComponentProvider.DEFAULT_RESOURCE_PATTERN;
 
 	/**
+	 *  对应这个 org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider#registerDefaultFilters()
+	 *
 	 * Indicates whether automatic detection of classes annotated with {@code @Component}
 	 * {@code @Repository}, {@code @Service}, or {@code @Controller} should be enabled.
 	 */

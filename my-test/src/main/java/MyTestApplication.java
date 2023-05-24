@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -14,6 +16,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.StandardEnvironment;
 import service.UserService;
 import spring动态代理测试用到的类.Interceptor.OrderServiceIntercept;
 import spring动态代理测试用到的类.service.OrderService;
@@ -61,8 +66,27 @@ public class MyTestApplication {
 	}
 
 	@Test
+	@DisplayName("测试BeanDefinition")
 	public void testBeanDefinition(){
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		System.out.println(context.getBeanDefinitionNames().length);
+		for (int i = 0; i < context.getBeanDefinitionNames().length; i++) {
+			System.out.println(context.getBeanDefinitionNames()[i]);
+		}
 
+		GenericBeanDefinition genericBeanDefinition = new GenericBeanDefinition();
+		genericBeanDefinition.setBeanClass(HelloService.class);
+		genericBeanDefinition.setScope(BeanDefinition.SCOPE_PROTOTYPE);
+		genericBeanDefinition.setDependsOn("sayService");
+		context.registerBeanDefinition("helloService", genericBeanDefinition);
+
+		context.refresh();
+
+		BeanDefinition mergedBeanDefinition = context.getBeanFactory().getMergedBeanDefinition("helloService");
+		BeanDefinition beanDefinition = context.getBeanFactory().getMergedBeanDefinition("helloService");
+
+		System.out.println(mergedBeanDefinition);
+		System.out.println(beanDefinition);
 
 	}
 
@@ -122,7 +146,64 @@ public class MyTestApplication {
 		smc.multicastEvent(applicationEvent);
 	}
 
+
+	@Test
+	@DisplayName("测试Environment抽象")
+	public void testEnvironment(){
+
+		//定义多个属性源
+		PropertySource<String> propertySource = new PropertySource<String>("localPropertySource") {
+			@Override
+			public Object getProperty(String name) {
+				return name.equals("姓名")?"张三":"李四";
+			}
+		};
+		PropertySource<String> apolloSource = new PropertySource<String>("apolloPropertySource") {
+			@Override
+			public Object getProperty(String name) {
+				return name.equals("姓名")?"正式名字-张三":"正式名字-李四";
+			}
+		};
+
+		/**
+		 * 多个属性源添加到{@link org.springframework.core.env.Environment} 里面
+		 */
+		ConfigurableEnvironment  environment=new StandardEnvironment();
+
+		environment.getPropertySources().addLast(propertySource);
+
+		/**
+		 * 多个propertySource里面存在相同的key，则哪个propertySource在前面则取哪个key的值
+		 */
+		environment.getPropertySources().addFirst(apolloSource);
+
+		String name = environment.getProperty("姓名");
+
+		System.out.println(name);
+
+	}
+
+
+	@Test
+	@DisplayName("测试@profile注解")
+	public void testProfileAnnotation(){
+
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.getEnvironment().setActiveProfiles("test","UAT","PRE");
+		context.register(MyConfig.class);
+		context.refresh();
+
+		//config.MyConfig.getStr中配置的UAT环境，所以能获取到这个Bean
+		Object myStr = context.getBean("myStr");
+
+		System.out.println(myStr);
+
+	}
 }
+
+
+
+
 
 
 
@@ -171,7 +252,7 @@ class  HelloService{
 @Configuration
  class RootConfig {
 	@Bean
-	HelloService getHelloService(){
+	HelloService helloService(){
 		return new HelloService();
 	}
 

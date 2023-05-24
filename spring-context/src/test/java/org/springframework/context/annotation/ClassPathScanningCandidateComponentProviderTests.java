@@ -278,6 +278,7 @@ public class ClassPathScanningCandidateComponentProviderTests {
 	@Test
 	public void testWithNoFilters() {
 		ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
+		provider.addIncludeFilter(new AnnotationTypeFilter(CustomStereotype.class));
 		Set<BeanDefinition> candidates = provider.findCandidateComponents(TEST_BASE_PACKAGE);
 		assertThat(candidates.size()).isEqualTo(0);
 	}

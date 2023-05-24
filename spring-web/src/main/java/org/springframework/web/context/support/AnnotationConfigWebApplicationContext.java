@@ -92,6 +92,12 @@ public class AnnotationConfigWebApplicationContext extends AbstractRefreshableWe
 	@Nullable
 	private ScopeMetadataResolver scopeMetadataResolver;
 
+	/**
+	 * {@link  AnnotationConfigRegistry} 接口的 注册 和scan方法的实现
+	 *
+	 * 注册的类就放到componentClasses， 需要扫描的类就放到 basePackages
+	 */
+
 	private final Set<Class<?>> componentClasses = new LinkedHashSet<>();
 
 	private final Set<String> basePackages = new LinkedHashSet<>();

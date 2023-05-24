@@ -23,7 +23,8 @@ import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
-/**
+/** {@link Configuration} 注解对应{@link org.springframework.beans.factory.config.BeanDefinition}
+ *
  * Extension of the {@link org.springframework.beans.factory.support.GenericBeanDefinition}
  * class, adding support for annotation metadata exposed through the
  * {@link AnnotatedBeanDefinition} interface.

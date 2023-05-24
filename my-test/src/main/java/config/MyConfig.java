@@ -1,8 +1,8 @@
 package config;
 
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Async;
@@ -48,5 +48,16 @@ public class MyConfig {
 	public TaskExecutor  taskExecutor2(){
 		ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
 		return threadPoolTaskExecutor;
+	}
+
+
+	/**
+	 * 测试@Profile注解哦
+	 * @return
+	 */
+	@Bean("myStr")
+	@Profile("UAT")
+	public  String getStr(){
+		return "我是配置";
 	}
 }

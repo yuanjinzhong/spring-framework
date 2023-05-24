@@ -61,6 +61,9 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 /**
+ *
+ * 根据 includeFilters 和 excludeFilters 来扫描指定目录下的 bean, 将它变成beanDefinition
+ *
  * A component provider that provides candidate components from a base package. Can
  * use {@link CandidateComponentsIndex the index} if it is available of scans the
  * classpath otherwise. Candidate components are identified by applying exclude and
@@ -92,6 +95,13 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	protected final Log logger = LogFactory.getLog(getClass());
 
 	private String resourcePattern = DEFAULT_RESOURCE_PATTERN;
+
+
+	/**
+	 * 主要用在{@link  ClassPathScanningCandidateComponentProvider#isCandidateComponent(MetadataReader)} 方法
+	 *
+	 * 给 bean注册提供钩子，使得有些bean能注册，有的不注册，有的不管
+	 */
 
 	private final List<TypeFilter> includeFilters = new LinkedList<>();
 
@@ -412,6 +422,11 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 		return candidates;
 	}
 
+	/**
+	 * 将指定目录的Class变成beanDefinition
+	 * @param basePackage
+	 * @return
+	 */
 	private Set<BeanDefinition> scanCandidateComponents(String basePackage) {
 		Set<BeanDefinition> candidates = new LinkedHashSet<>();
 		try {
@@ -480,6 +495,8 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	}
 
 	/**
+	 *
+	 *
 	 * Determine whether the given class does not match any exclude filter
 	 * and does match at least one include filter.
 	 * @param metadataReader the ASM ClassReader for the class
@@ -510,6 +527,9 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 			this.conditionEvaluator =
 					new ConditionEvaluator(getRegistry(), this.environment, this.resourcePatternResolver);
 		}
+		/**
+		 * {@link Profile} 注解就是这里处理的， 主要还是{@link Conditional} 注解 和{@link Condition} 接口的能力
+		 */
 		return !this.conditionEvaluator.shouldSkip(metadataReader.getAnnotationMetadata());
 	}
 

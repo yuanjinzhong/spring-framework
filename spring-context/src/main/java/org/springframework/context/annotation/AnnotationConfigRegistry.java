@@ -17,6 +17,10 @@
 package org.springframework.context.annotation;
 
 /**
+ *
+ *  这个接口仅仅是规范了， 注册 和扫描 这2个方法
+ *
+ *
  * Common interface for annotation config application contexts,
  * defining {@link #register} and {@link #scan} methods.
  *
@@ -25,7 +29,12 @@ package org.springframework.context.annotation;
  */
 public interface AnnotationConfigRegistry {
 
-	/**
+	/** 一个组件被注册多次没有影响。
+	 *
+	 * 注册组件，包括 {@link Configuration @Configuration}
+	 *
+	 * 最后还是委托 {@link AnnotatedBeanDefinitionReader#register(Class[])}
+	 *
 	 * Register one or more component classes to be processed.
 	 * <p>Calls to {@code register} are idempotent; adding the same
 	 * component class more than once has no additional effect.
@@ -35,6 +44,8 @@ public interface AnnotationConfigRegistry {
 	void register(Class<?>... componentClasses);
 
 	/**
+	 *  最后还是委托{@link ClassPathBeanDefinitionScanner#scan(String...)}
+	 *
 	 * Perform a scan within the specified base packages.
 	 * @param basePackages the packages to scan for component classes
 	 */

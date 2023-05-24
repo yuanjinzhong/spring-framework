@@ -17,6 +17,12 @@
 package org.springframework.core.env;
 
 /**
+ * 代表的应用运行时的环境
+ *
+ * 有俩个方面表示环境： profiles 和 properties
+ *
+ * 属性访问委托给 {@link PropertyResolver} superinterface.
+ *<p>
  * Interface representing the environment in which the current application is running.
  * Models two key aspects of the application environment: <em>profiles</em> and
  * <em>properties</em>. Methods related to property access are exposed via the

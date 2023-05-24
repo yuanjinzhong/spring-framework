@@ -159,6 +159,8 @@ public class AsyncAnnotationAdvisor extends AbstractPointcutAdvisor implements B
 	}
 
 	/**
+	 * 生成切点，可以{@link Async}可以加到切点
+	 *
 	 * Calculate a pointcut for the given async annotation types, if any.
 	 * @param asyncAnnotationTypes the async annotation types to introspect
 	 * @return the applicable Pointcut object, or {@code null} if none
@@ -166,7 +168,9 @@ public class AsyncAnnotationAdvisor extends AbstractPointcutAdvisor implements B
 	protected Pointcut buildPointcut(Set<Class<? extends Annotation>> asyncAnnotationTypes) {
 		ComposablePointcut result = null;
 		for (Class<? extends Annotation> asyncAnnotationType : asyncAnnotationTypes) {
+			//当前类或者父类
 			Pointcut cpc = new AnnotationMatchingPointcut(asyncAnnotationType, true);
+			//当前方法 或者父类的该方法
 			Pointcut mpc = new AnnotationMatchingPointcut(null, asyncAnnotationType, true);
 			if (result == null) {
 				result = new ComposablePointcut(cpc);
