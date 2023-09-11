@@ -36,8 +36,8 @@ public class MyTestApplication {
 
 
 	@Test
-	public  void testGetBean() {
-        //测试refresh方法
+	public void testGetBean() {
+		//测试refresh方法
 		ApplicationContext context = new AnnotationConfigApplicationContext(MyConfig.class, A.class, B.class);
 		UserService userService = context.getBean(UserService.class);
 		userService.say();
@@ -51,7 +51,7 @@ public class MyTestApplication {
 		//测试发布事件,MyConfig.class里面消费
 		context.publishEvent("我是发出的消息");
 
-        //编程式创建动态代理
+		//编程式创建动态代理
 		ProxyFactory proxyFactory = new ProxyFactory(new OrderServiceImpl());
 		proxyFactory.addAdvice(new OrderServiceIntercept());
 		OrderService orderService = (OrderService) proxyFactory.getProxy();
@@ -67,7 +67,7 @@ public class MyTestApplication {
 
 	@Test
 	@DisplayName("测试BeanDefinition")
-	public void testBeanDefinition(){
+	public void testBeanDefinition() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		System.out.println(context.getBeanDefinitionNames().length);
 		for (int i = 0; i < context.getBeanDefinitionNames().length; i++) {
@@ -93,7 +93,7 @@ public class MyTestApplication {
 
 	@Test
 	@DisplayName("测试AutowireCapableBeanFactory")
-	public void testAutowireCapableBeanFactory(){
+	public void testAutowireCapableBeanFactory() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(RootConfig.class);
 		AutowireCapableBeanFactory autowireCapableBeanFactory = context.getAutowireCapableBeanFactory();
 		/**
@@ -101,7 +101,7 @@ public class MyTestApplication {
 		 *
 		 * 但是内部依赖的{@link  HelloService} 需要是spring管理的，这样才能用来装配{@link  Child}
 		 */
-		Child child = (Child)autowireCapableBeanFactory.createBean(Child.class, AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, false);
+		Child child = (Child) autowireCapableBeanFactory.createBean(Child.class, AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, false);
 		child.getHelloService().say();
 
 		/**
@@ -109,17 +109,13 @@ public class MyTestApplication {
 		 *
 		 * 从spring容器里面是获取不到 Child的，（不被spring管理）
 		 */
-		Assertions.assertThrows(NoSuchBeanDefinitionException.class,()->context.getBean(Child.class));
+		Assertions.assertThrows(NoSuchBeanDefinitionException.class, () -> context.getBean(Child.class));
 	}
-
-
-
-
 
 
 	@Test
 	@DisplayName("测试一些ResolveType的用法")
-	public void testResolveType(){
+	public void testResolveType() {
 		Child child = new Child();
 		child.setAge(20);
 		child.setName("张三");
@@ -128,17 +124,14 @@ public class MyTestApplication {
 	}
 
 
-
-
-
 	@Test
 	@DisplayName("测试事件监听-事件多播-异步监听-errorHandle")
 	public void simpleApplicationEventMulticasterWithTaskExecutor() {
 		@SuppressWarnings("unchecked")
-		ApplicationListener<ApplicationEvent> listener = (x)-> {
-			throw  new RuntimeException("222");
+		ApplicationListener<ApplicationEvent> listener = (x) -> {
+			throw new RuntimeException("222");
 		};
-		ApplicationEvent	applicationEvent = new PayloadApplicationEvent<>(this, "我是测试消息");
+		ApplicationEvent applicationEvent = new PayloadApplicationEvent<>(this, "我是测试消息");
 		SimpleApplicationEventMulticaster smc = new SimpleApplicationEventMulticaster();
 		ExecutorService executorService = Executors.newFixedThreadPool(2);
 		smc.setTaskExecutor(executorService);
@@ -149,26 +142,26 @@ public class MyTestApplication {
 
 	@Test
 	@DisplayName("测试Environment抽象")
-	public void testEnvironment(){
+	public void testEnvironment() {
 
 		//定义多个属性源
 		PropertySource<String> propertySource = new PropertySource<String>("localPropertySource") {
 			@Override
 			public Object getProperty(String name) {
-				return name.equals("姓名")?"张三":"李四";
+				return name.equals("姓名") ? "张三" : "李四";
 			}
 		};
 		PropertySource<String> apolloSource = new PropertySource<String>("apolloPropertySource") {
 			@Override
 			public Object getProperty(String name) {
-				return name.equals("姓名")?"正式名字-张三":"正式名字-李四";
+				return name.equals("姓名") ? "正式名字-张三" : "正式名字-李四";
 			}
 		};
 
 		/**
 		 * 多个属性源添加到{@link org.springframework.core.env.Environment} 里面
 		 */
-		ConfigurableEnvironment  environment=new StandardEnvironment();
+		ConfigurableEnvironment environment = new StandardEnvironment();
 
 		environment.getPropertySources().addLast(propertySource);
 
@@ -186,10 +179,10 @@ public class MyTestApplication {
 
 	@Test
 	@DisplayName("测试@profile注解")
-	public void testProfileAnnotation(){
+	public void testProfileAnnotation() {
 
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		context.getEnvironment().setActiveProfiles("test","UAT","PRE");
+		context.getEnvironment().setActiveProfiles("test", "UAT", "PRE");
 		context.register(MyConfig.class);
 		context.refresh();
 
@@ -202,13 +195,7 @@ public class MyTestApplication {
 }
 
 
-
-
-
-
-
-
- class Child {
+class Child {
 
 	// 注意：这里并没有@Autowired注解的
 	private HelloService helloService;
@@ -242,18 +229,30 @@ public class MyTestApplication {
 
 
 // 需要交给spring 管理
-class  HelloService{
-	void say(){
+class HelloService {
+	void say() {
 		System.out.println("*******hello*******");
 	}
 }
 
 
 @Configuration
- class RootConfig {
+class RootConfig {
 	@Bean
-	HelloService helloService(){
+	HelloService helloService() {
 		return new HelloService();
 	}
+
+
+
+	/**
+	 * 测试自定义注解修饰的类被spring管理之后，@autowire 其他service
+	 * @see org.springframework.context.annotation.ClassPathScanningCandidateComponentProviderTests#testWithNoFilters()
+	 */
+	@Test
+	public void testCustomAnnotation() {
+
+	}
+
 
 }

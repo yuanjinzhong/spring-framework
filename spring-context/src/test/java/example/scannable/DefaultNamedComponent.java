@@ -20,7 +20,7 @@ package example.scannable;
 /**
  * @author Juergen Hoeller
  */
-@CustomStereotype
+@CustomStereotype(value ="defaultNamedComponent" )
 public class DefaultNamedComponent {
 
 }

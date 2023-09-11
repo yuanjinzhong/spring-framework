@@ -28,6 +28,7 @@ import example.profilescan.ProfileMetaAnnotatedComponent;
 import example.scannable.AutowiredQualifierFooService;
 import example.scannable.CustomStereotype;
 import example.scannable.DefaultNamedComponent;
+import example.scannable.DefaultNamedComponentWithOtherService;
 import example.scannable.FooDao;
 import example.scannable.FooService;
 import example.scannable.FooServiceImpl;
@@ -42,6 +43,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.context.testfixture.index.CandidateComponentsTestClassLoader;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
@@ -283,8 +285,28 @@ public class ClassPathScanningCandidateComponentProviderTests {
 		/**
 		 * 能找到一个：DefaultNamedComponent，因为它被CustomStereotype注解修饰
 		 */
-		assertThat(candidates.size()).isEqualTo(1);
+		assertThat(candidates.size()).isEqualTo(2);
 	}
+
+	/**
+	 * 测试自定义注解修饰类 里面 @autowire 其他service的用例
+	 */
+	@Test
+	public void testWithNoFiltersV2() {
+
+		GenericApplicationContext context = new GenericApplicationContext();
+		ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(context,false);
+		scanner.addIncludeFilter(new AnnotationTypeFilter(CustomStereotype.class));
+		scanner.doScan(TEST_BASE_PACKAGE);
+
+		context.refresh();
+
+		DefaultNamedComponent defaultNamedComponent = context.getBean("defaultNamedComponent", DefaultNamedComponent.class);
+		DefaultNamedComponentWithOtherService defaultNamedComponentWithOtherService = context.getBean("defaultNamedComponentWithOtherService", DefaultNamedComponentWithOtherService.class);
+		defaultNamedComponentWithOtherService.debug(); //todo 测试失败，DefaultNamedComponentWithOtherService内部无法注入DefaultNamedComponent
+	}
+
+
 
 	@Test
 	public void testWithComponentAnnotationOnly() {
