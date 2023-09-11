@@ -101,10 +101,16 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 * 主要用在{@link  ClassPathScanningCandidateComponentProvider#isCandidateComponent(MetadataReader)} 方法
 	 *
 	 * 给 bean注册提供钩子，使得有些bean能注册，有的不注册，有的不管
+	 *
+	 * 针对{@link TypeFilter}接口，使用最广泛的是{@link AnnotationTypeFilter} 用于标识各种注解，
+	 * <p>最终表示的语意是添加某个注解的类，会被BeanDefinitionScanner扫描到</p>
 	 */
 
 	private final List<TypeFilter> includeFilters = new LinkedList<>();
 
+	/**
+	 *  <p>最终表示的语意是添加某个注解的类，不会被BeanDefinitionScanner扫描到（排除之）</p>
+	 */
 	private final List<TypeFilter> excludeFilters = new LinkedList<>();
 
 	@Nullable
@@ -202,6 +208,9 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	}
 
 	/**
+	 * spring 环境之所以能扫描到{@link Service} {@link Repository} {@link Controller} 标注的类，
+	 * <p> 是因为这些注解上有 {@link  Component} 注解 </p>
+	 * <p></p>
 	 * Register the default filter for {@link Component @Component}.
 	 * <p>This will implicitly register all annotations that have the
 	 * {@link Component @Component} meta-annotation including the
@@ -495,7 +504,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	}
 
 	/**
-	 *
+	 * 只扫描特定Filter的主键类
 	 *
 	 * Determine whether the given class does not match any exclude filter
 	 * and does match at least one include filter.

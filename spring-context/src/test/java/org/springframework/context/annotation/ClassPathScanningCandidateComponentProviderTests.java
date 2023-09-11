@@ -280,7 +280,10 @@ public class ClassPathScanningCandidateComponentProviderTests {
 		ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
 		provider.addIncludeFilter(new AnnotationTypeFilter(CustomStereotype.class));
 		Set<BeanDefinition> candidates = provider.findCandidateComponents(TEST_BASE_PACKAGE);
-		assertThat(candidates.size()).isEqualTo(0);
+		/**
+		 * 能找到一个：DefaultNamedComponent，因为它被CustomStereotype注解修饰
+		 */
+		assertThat(candidates.size()).isEqualTo(1);
 	}
 
 	@Test
