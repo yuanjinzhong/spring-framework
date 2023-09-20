@@ -62,13 +62,18 @@ class ApplicationListenerMethodTransactionalAdapter extends ApplicationListenerM
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (TransactionSynchronizationManager.isSynchronizationActive() &&
 				TransactionSynchronizationManager.isActualTransactionActive()) {
+			//生成一个事物同步器，内部行为是调用事件监听方法，  事物在不同阶段，调用不同方法； beforeCommit阶段 afterCompletion阶段
 			TransactionSynchronization transactionSynchronization = createTransactionSynchronization(event);
+			// 将事物同步器绑定到事物同步 管理 器
 			TransactionSynchronizationManager.registerSynchronization(transactionSynchronization);
 		}
+
+		// 不在事物中
 		else if (this.annotation.fallbackExecution()) {
 			if (this.annotation.phase() == TransactionPhase.AFTER_ROLLBACK && logger.isWarnEnabled()) {
 				logger.warn("Processing " + event + " as a fallback execution on AFTER_ROLLBACK phase");
 			}
+			// 直接调用
 			processEvent(event);
 		}
 		else {
