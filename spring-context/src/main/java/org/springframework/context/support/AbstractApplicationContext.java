@@ -898,7 +898,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		/**Register statically specified listeners first.
 		 * 取的{@link java.util.EventListener} 和{@link TransactionalEventListener} 注解对应的方法封装的监听者类
 		 *
-		 * 以上理解错了，此时Bpp还没有处理EventListener注解，也没有处理TransactionalEventListener注解
+		 * 以上理解错了，此时Bpp还没有处理EventListener注解，也没有处理TransactionalEventListener注解; 处理事件注解是在这个BPP:{@link EventListenerMethodProcessor}
 		 *
 		 */
 		for (ApplicationListener<?> listener : getApplicationListeners()) {
