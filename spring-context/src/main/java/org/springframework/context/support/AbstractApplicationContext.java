@@ -971,7 +971,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		 */
 		// Publish early application events now that we finally have a multicaster...
 		Set<ApplicationEvent> earlyEventsToProcess = this.earlyApplicationEvents;
-		this.earlyApplicationEvents = null;
+		this.earlyApplicationEvents = null;/**清空之后，从此没有早期事件这个概念*/
 		if (earlyEventsToProcess != null) {
 			for (ApplicationEvent earlyEvent : earlyEventsToProcess) {
                // 上面将监听者和多播器绑定，并且调用了一下监听者的方法
