@@ -135,6 +135,7 @@ public class MyTestApplication {
 		SimpleApplicationEventMulticaster smc = new SimpleApplicationEventMulticaster();
 		ExecutorService executorService = Executors.newFixedThreadPool(2);
 		smc.setTaskExecutor(executorService);
+		smc.setErrorHandler((e)-> System.out.println("errorHandler吃掉了异常，仅仅打印异常信息"+e.getMessage()));
 		smc.addApplicationListener(listener);
 		smc.multicastEvent(applicationEvent);
 	}

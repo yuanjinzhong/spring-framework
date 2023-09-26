@@ -402,7 +402,18 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			}
 		}
 
-		// Multicast right now if possible - or lazily once the multicaster is initialized
+		/**
+		 *
+		 * 早期事件集合不等于空，说明事件多播器还没有发送集合里面的事件（模板方法初始化的倒数第二步，会将早期事件集合清空，并且用事件多播发送消息），证明还在初始化阶段；
+		 *
+		 * 则将事件保存在早期事件集合里面，等到{@link AbstractApplicationContext#registerListeners()} 里面通过多播器去调用，再将事件集合设置为null; 至此，早期事件集合不再使用
+		 *
+		 * 比如dubbo在ReferenceAnnotationBeanPostProcessor里面发送的事件
+		 *
+		 *
+		 * Multicast right now if possible - or lazily once the multicaster is initialized
+		 *
+		 */
 		if (this.earlyApplicationEvents != null) {
 			this.earlyApplicationEvents.add(applicationEvent);
 		}
@@ -540,6 +551,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	public void refresh() throws BeansException, IllegalStateException {
 		synchronized (this.startupShutdownMonitor) {
 			// Prepare this context for refreshing.
+			/**
+			 * 这里面还构建了早期事件集合
+			 */
 			prepareRefresh();
 
 			//codex 告诉子类刷新内部 bean工厂
@@ -669,6 +683,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			this.applicationListeners.addAll(this.earlyApplicationListeners);
 		}
 
+		/**
+		 * 早期事件集合，容器启动期间产生的事件都放到这个集合里面，例如各种BPP启动期间产生的事件（因为这时候【事件多播器】还没法使用）
+		 */
 		// Allow for the collection of early ApplicationEvents,
 		// to be published once the multicaster is available...
 		this.earlyApplicationEvents = new LinkedHashSet<>();
@@ -910,7 +927,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		 *
 		 * 结论是可以取到，参考dubbo的各种ApplicaitonEventListener,在这里已经可以取到，
 		 *
-		 * beandefinition在BPP的处理中，已经加入bean工厂
+		 * beandefinition在BPP的处理中，已经加入bean工厂，或者通过@Commonent 或者@Configuration +@Bean的方式
 		 *
 		 * 所以这里表示 【将用户的实现的ApplicationListener添加到多播器里面】
 		 */
@@ -922,11 +939,35 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 
 		/**
-		 * 只是发送早期的event（系统自身的消息）
+		 *  【【早期事件处理】】
+		 *
+		 * 只是发送早期的event（系统自身的消息,例如 Dubbo在启动期间通过BPP发送的消息）
 		 *
 		 * 不发送用户消息，
 		 *
 		 * 用户的消息 永远是publish为起点（用户的消息得手动调用ApplicationContext的push方法才会触发）
+		 *
+		 *
+		 * 更为详细的解释：(参考 {@link AbstractApplicationContext#publishEvent(Object, ResolvableType)})里面的注释
+		 *
+		 * 		 *
+		 * 		 * 早期事件集合不等于空，说明事件多播器还没有发送集合里面的事件（模板方法初始化的倒数第二步，会将早期事件集合清空，并且用事件多播发送消息），证明还在初始化阶段；
+		 * 		 *
+		 * 		 * 则将事件保存在早期事件集合里面，等到{@link AbstractApplicationContext#registerListeners()} 里面通过多播器去调用，再将事件集合设置为null; 至此，早期事件集合不再使用
+		 * 		 *
+		 * 		 * 比如dubbo在ReferenceAnnotationBeanPostProcessor里面发送的事件
+		 *
+		 *
+		 *
+		 * 【earlyApplicationEvents集合的生命周期】
+		 * 模板方法{@link AbstractApplicationContext#prepareRefresh()}里面初始化
+		 *
+		 *          再启动期间任何组建（内部、或三方框架定义的BPP）通过调用{@link  AbstractApplicationContext#publishEvent(Object)} 发送的消息，都会进入【earlyApplicationEvents】
+		 *          因为	{@link  AbstractApplicationContext#publishEvent(Object)}内部判断早期事件集合不等于空，则往集合里面塞
+		 *
+		 * 模板方法{@link AbstractApplicationContext#registerListeners()} 里面清空，并将（早期）事件发送出去（通过多播）
+		 *
+		 *
 		 */
 		// Publish early application events now that we finally have a multicaster...
 		Set<ApplicationEvent> earlyEventsToProcess = this.earlyApplicationEvents;

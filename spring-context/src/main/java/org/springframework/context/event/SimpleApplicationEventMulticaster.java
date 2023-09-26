@@ -142,7 +142,7 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 		//根据参数类型获取监听器（这就是为什么 指定类型的监听者能获取指定类型的消息）
 		for (ApplicationListener<?> listener : getApplicationListeners(event, type)) {
 			/**
-			 * 这里的异步支持一般没用，通常是{@link java.util.EventListener} 搭配 {@link org.springframework.scheduling.annotation.Async} 注解使用提供异步功能
+			 * 这里的异步支持一般没用（意思是一般不会设置这个executor），通常是{@link java.util.EventListener} 搭配 {@link org.springframework.scheduling.annotation.Async} 注解使用提供异步功能
 			 */
 			if (executor != null) {
 				executor.execute(() -> invokeListener(listener, event));
