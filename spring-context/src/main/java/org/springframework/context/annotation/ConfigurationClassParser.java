@@ -279,8 +279,10 @@ class ConfigurationClassParser {
 			processMemberClasses(configClass, sourceClass, filter);
 		}
 
-		// 和Environment 还有 propertySource相关，配置中心的实现
-		// Process any @PropertySource annotations
+		/**
+		 * codex 和Environment 还有 propertySource相关，配置中心的实现
+		 * codex  Process any @PropertySource annotations (将注解指定的配置文件加载到Environment里面)
+		 */
 		for (AnnotationAttributes propertySource : AnnotationConfigUtils.attributesForRepeatable(
 				sourceClass.getMetadata(), PropertySources.class,
 				org.springframework.context.annotation.PropertySource.class)) {
