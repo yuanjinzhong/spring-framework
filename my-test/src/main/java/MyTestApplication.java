@@ -77,16 +77,18 @@ public class MyTestApplication {
 		GenericBeanDefinition genericBeanDefinition = new GenericBeanDefinition();
 		genericBeanDefinition.setBeanClass(HelloService.class);
 		genericBeanDefinition.setScope(BeanDefinition.SCOPE_PROTOTYPE);
-		genericBeanDefinition.setDependsOn("sayService");
+		//genericBeanDefinition.setDependsOn("sayService");//依赖这个service，则需要这个beanDefinition
 		context.registerBeanDefinition("helloService", genericBeanDefinition);
 
 		context.refresh();
 
 		BeanDefinition mergedBeanDefinition = context.getBeanFactory().getMergedBeanDefinition("helloService");
 		BeanDefinition beanDefinition = context.getBeanFactory().getMergedBeanDefinition("helloService");
-
+		HelloService helloService = context.getBeanFactory().getBean("helloService", HelloService.class);//bean工厂里面有beanDefinition则可以从bean工厂里面取出这个bean实类
 		System.out.println(mergedBeanDefinition);
 		System.out.println(beanDefinition);
+		System.out.println(helloService);
+		helloService.say();
 
 	}
 
