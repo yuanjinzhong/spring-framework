@@ -23,6 +23,7 @@ import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
 
 /**
@@ -58,6 +59,23 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.beans.factory.BeanFactoryAware
  * @see org.springframework.beans.factory.config.ConfigurableListableBeanFactory
  * @see org.springframework.context.ApplicationContext#getAutowireCapableBeanFactory()
+ */
+
+/**
+ * codex
+ * <p>AutowireCapableBeanFactory在Spring中起着重要的作用，它是实现依赖注入的关键接口，
+ * <p>无论是Spring本身实现DI还是与第三方框架绑定，都会深度依赖于AutowireCapableBeanFactory。
+ *
+ * <p>AutowireCapableBeanFactory的方法主要被以下两个BPP类调用：
+ *
+ * <li>AutowiredAnnotationBeanPostProcessor：这个类负责处理{@link Autowired}注解，它会在Bean的创建过程中扫描并解析@Autowired注解，并根据注解中的依赖类型进行自动装配。</li>
+ *
+ * <li>CommonAnnotationBeanPostProcessor：这个类负责处理{@link javax.annotation.Resource}注解等通用的依赖注入注解，它会在Bean的创建过程中扫描并解析这些注解，并根据注解中的依赖类型进行自动装配。</li>
+ *
+ * <p>
+ * <p>
+ * 理论上讲，测试上面两个BPP，就能测试到AutowireCapableBeanFactory接口提供的能力
+ *
  */
 public interface AutowireCapableBeanFactory extends BeanFactory {
 
