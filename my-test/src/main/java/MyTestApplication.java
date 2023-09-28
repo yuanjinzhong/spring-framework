@@ -174,8 +174,12 @@ public class MyTestApplication {
 		environment.getPropertySources().addFirst(apolloSource);
 
 		String name = environment.getProperty("姓名");
-
+		/**
+		 *  占位符解析，${姓名} 表示去寻找 key为 "姓名"的属性，然后替换该占位符
+		 */
+		String placeholders = environment.resolvePlaceholders("Replace this ${姓名}");
 		System.out.println(name);
+		System.out.println(placeholders);
 
 	}
 
