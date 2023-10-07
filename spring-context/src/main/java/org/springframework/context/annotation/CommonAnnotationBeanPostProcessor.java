@@ -497,7 +497,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 		return autowireResource(this.resourceFactory, element, requestingBeanName);
 	}
 
-	/**
+	/** 解决依赖注入
 	 * Obtain a resource object for the given name and type through autowiring
 	 * based on the given factory.
 	 * @param factory the factory to autowire against

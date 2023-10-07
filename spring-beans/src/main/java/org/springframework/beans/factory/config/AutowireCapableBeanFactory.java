@@ -407,6 +407,8 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	Object resolveDependency(DependencyDescriptor descriptor, @Nullable String requestingBeanName) throws BeansException;
 
 	/**
+	 * 被{@link org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor} 和 {@link org.springframework.context.annotation.CommonAnnotationBeanPostProcessor}
+	 * 使用，用来解决依赖注入
 	 * Resolve the specified dependency against the beans defined in this factory.
 	 * @param descriptor the descriptor for the dependency (field/method/constructor)
 	 * @param requestingBeanName the name of the bean which declares the given dependency
