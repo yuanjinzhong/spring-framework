@@ -88,6 +88,8 @@ import org.springframework.util.StringUtils;
  * @see #getAdvicesAndAdvisorsForBean
  * @see BeanNameAutoProxyCreator
  * @see DefaultAdvisorAutoProxyCreator
+ *
+ * todo 这个就是个动态的的代理的发动机
  */
 @SuppressWarnings("serial")
 public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
@@ -236,9 +238,18 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		return null;
 	}
 
+	/**
+	 * 合适的情况下,会基于当前bean创建代理对象
+	 * 合适的情况是指:当前bean上有对应的advice,也就是有增强
+	 * @param bean the raw bean instance
+	 * @param beanName the name of the bean
+	 * @return
+	 */
 	@Override
 	public Object getEarlyBeanReference(Object bean, String beanName) {
 		Object cacheKey = getCacheKey(bean.getClass(), beanName);
+		//针对创建代理对象这件事做个标记,目的是为了代理对象重复创建(即,代理对象也得是单例)
+		// 这里的意义就是一个bean的代理对象只有一个,但是代理对象的上下文中(用advised接口表示)会有很对advice(会有很多增强,用List<advice>表示)
 		this.earlyProxyReferences.put(cacheKey, bean);
 		return wrapIfNecessary(bean, beanName, cacheKey);
 	}
@@ -306,6 +317,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 			Object cacheKey = getCacheKey(bean.getClass(), beanName);
 			//循环依赖，三级会缓存的内容
 			if (this.earlyProxyReferences.remove(cacheKey) != bean) {
+				// 生成代理对象,增强方法
 				return wrapIfNecessary(bean, beanName, cacheKey);
 			}
 		}
@@ -337,7 +349,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		}
 	}
 
-	/**
+	/** 如果需要，包装给定的 bean，也就是说，如果它符合被代理的条件。
 	 * Wrap the given bean if necessary, i.e. if it is eligible for being proxied.
 	 * @param bean the raw bean instance
 	 * @param beanName the name of the bean
@@ -357,7 +369,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		}
 
 		/**
-		 * 如果有advice(切面增强)，则创建代理对象； 所以被spring管理的bean不一定是代理对象，得看类上、方法上是否有代理对象
+		 * 如果有advice(切面增强)，则创建代理对象； 所以被spring管理的bean不一定是代理对象，得看类上、方法上是否有增强
 		 */
 		// Create proxy if we have advice.
 		Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);

@@ -189,6 +189,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 				if (singletonObject == null && allowEarlyReference) {// 二级缓存没有，且允许循环依赖
 					ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);// 三级缓存
 					if (singletonFactory != null) {
+						// 这里可能是代理对象,因为这个对象工厂的lambda表达式是: () -> getEarlyBeanReference(beanName, mbd, bean),而这个方法可能创建代理对象
 						singletonObject = singletonFactory.getObject();// 获取已经实例化但是未初始化的对象
 						this.earlySingletonObjects.put(beanName, singletonObject);// 二级缓存 key: 对象名 value:未初始化的对象
 						this.singletonFactories.remove(beanName); // 三级缓存 key 对象名字  value:  未初始化对象工厂

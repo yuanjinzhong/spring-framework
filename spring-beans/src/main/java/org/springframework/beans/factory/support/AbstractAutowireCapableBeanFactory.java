@@ -611,7 +611,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 						"' to allow for resolving potential circular references");
 			}
 			/**
-			 * 把单例工厂放到三级缓存， getEarlyBeanReference得到的是未初始化bean
+			 * 把单例工厂放到三级缓存， getEarlyBeanReference得到的是未初始化bean, 这个bean 可能是个代理对象
 			 */
 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
 		}
@@ -620,7 +620,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		Object exposedObject = bean;
 		try {//todo codex  setter方式注入属性, 会继续走DefaultSingletonBeanRegistry.getSingleton获取依赖的实例
 			populateBean(beanName, mbd, instanceWrapper);
-			exposedObject = initializeBean(beanName, exposedObject, mbd); // todo 一些初始化接口的调用，例如：afterPropertiesSet 和 aware接口的方法
+			// todo 一些初始化接口的调用，例如：afterPropertiesSet 和 aware接口的方法,
+			//  以及BPP的逻辑其中有一个BPP(AbstractAutoProxyCreator) 它的作用是用来创建代理对象
+			exposedObject = initializeBean(beanName, exposedObject, mbd);
 		}
 		catch (Throwable ex) {
 			if (ex instanceof BeanCreationException && beanName.equals(((BeanCreationException) ex).getBeanName())) {
@@ -990,6 +992,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			for (BeanPostProcessor bp : getBeanPostProcessors()) {
 				if (bp instanceof SmartInstantiationAwareBeanPostProcessor) {
 					SmartInstantiationAwareBeanPostProcessor ibp = (SmartInstantiationAwareBeanPostProcessor) bp;
+					// todo codex 这个 smartBpp的实现类是:AbstractAutoProxyCreator,它实现的这个方法在合适的情况下会创建代理对象
 					exposedObject = ibp.getEarlyBeanReference(exposedObject, beanName);
 				}
 			}
@@ -1815,7 +1818,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		Object wrappedBean = bean;
 		if (mbd == null || !mbd.isSynthetic()) {
-			wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
+			// 有一个BPP(AbstractAutoProxyCreator) 它的作用是用来创建代理对象
+			wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);// bpp:对象初始化前调用
 		}
 
 		try {
@@ -1827,7 +1831,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 					beanName, "Invocation of init method failed", ex);
 		}
 		if (mbd == null || !mbd.isSynthetic()) {
-			wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);
+			// 有一个BPP(AbstractAutoProxyCreator) 它的作用是用来创建代理对象
+			wrappedBean = applyBeanPostProcessorsAfterInitialization(wrappedBean, beanName);//bpp:对象初始化之后调用
 		}
 
 		return wrappedBean;
