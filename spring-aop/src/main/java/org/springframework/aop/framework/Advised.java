@@ -24,7 +24,28 @@ import org.springframework.aop.TargetSource;
 
 /** <p> aop代理工厂的配置
  *
- * <p> spring 容器中获取到的aop 代理 都可以转换成该对象 {@link  Advised}
+ *
+ * spring容器中获取到的aop代理对象,都可以转换成该对象;意思是:它是任何spring代理对象的基类
+ *
+ *
+ * 参考这段代码：
+ *
+ * 		if (bean instanceof Advised) { // 为true,表示当前是代理对象
+ * 			Advised advised = (Advised) bean;
+ * 			if (!advised.isFrozen() && isEligible(AopUtils.getTargetClass(bean))) {
+ * 				// Add our local Advisor to the existing proxy's Advisor chain...
+ * 				if (this.beforeExistingAdvisors) {
+ * 					advised.addAdvisor(0, this.advisor);
+ *                                }
+ * 				else {
+ * 					advised.addAdvisor(this.advisor);
+ *                }
+ * 				return bean;*                    }
+ * 		}
+ *
+ *
+ *
+ *
  *<p>
  *<p>
  * <p> Interface to be implemented by classes that hold the configuration

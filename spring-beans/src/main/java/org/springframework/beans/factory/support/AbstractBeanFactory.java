@@ -250,7 +250,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		final String beanName = transformedBeanName(name);
 		Object bean;
 
-		//获取bean的时候处理三级缓存
+		/**
+		 * 获取bean的时候处理三级缓存
+		 */
 		// Eagerly check singleton cache for manually registered singletons.
 		Object sharedInstance = getSingleton(beanName);
 		if (sharedInstance != null && args == null) {
@@ -330,7 +332,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				if (mbd.isSingleton()) {
 					sharedInstance = getSingleton(beanName, () -> {
 						try {
-							return createBean(beanName, mbd, args);
+							return createBean(beanName, mbd, args); // 这里也有循环依赖的逻辑
 						}
 						catch (BeansException ex) {
 							// Explicitly remove instance from singleton cache: It might have been put there
@@ -513,8 +515,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * Internal extended variant of {@link #isTypeMatch(String, ResolvableType)}
 	 * to check whether the bean with the given name matches the specified type. Allow
 	 * additional constraints to be applied to ensure that beans are not created early.
-	 * @param name the name of the bean to query
-	 * @param typeToMatch the type to match against (as a
+	 * @param name the name of the bean to query  当前创建的bean, 例如A
+	 * @param typeToMatch the type to match against (as a   当前创建的bean所依赖的bean,  假设 A 依赖 B ,则这里的typeToMatch就是B
 	 * {@code ResolvableType})
 	 * @return {@code true} if the bean type matches, {@code false} if it
 	 * doesn't match or cannot be determined yet

@@ -67,6 +67,9 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
 	@Nullable
 	private Boolean allowBeanDefinitionOverriding;
 
+	/**
+	 * 表示是否允许循环依赖
+	 */
 	@Nullable
 	private Boolean allowCircularReferences;
 

@@ -859,6 +859,10 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		return (this.configurationFrozen || super.isBeanEligibleForMetadataCaching(beanName));
 	}
 
+	/**
+	 * 预实例化单例
+	 * @throws BeansException
+	 */
 	@Override
 	public void preInstantiateSingletons() throws BeansException {
 		if (logger.isTraceEnabled()) {
@@ -1311,7 +1315,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 				autowiredBeanNames.add(autowiredBeanName);
 			}
 			if (instanceCandidate instanceof Class) {
-				instanceCandidate = descriptor.resolveCandidate(autowiredBeanName, type, this);
+				instanceCandidate = descriptor.resolveCandidate(autowiredBeanName, type, this);//todo 获取注入的bean实例， 比如A 依赖B,这里获取B的实例子，去注入A
 			}
 			Object result = instanceCandidate;
 			if (result instanceof NullBean) {

@@ -130,7 +130,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	@Nullable
 	private ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
 
-	/** Whether to automatically try to resolve circular references between beans. */
+	/** Whether to automatically try to resolve circular references between beans.
+	 *
+	 * 之所以加这个开关，是因为循环依赖不是好的架构， 但是实现上允许Setter方式的循环依赖，但是加一个开关予以控制
+	 *
+	 * */
 	private boolean allowCircularReferences = true;
 
 	/**
@@ -513,7 +517,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		try {
-			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
+			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance. todo 给BPP一个机会去生成代理类，但是这里可能返回一个null，接下来会继续创建bean实例
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
 				return bean;
@@ -524,7 +528,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 					"BeanPostProcessor before instantiation of bean failed", ex);
 		}
 
-		try {
+		try {// todo 这里面分两种情况， 1：构造器注入，会导致循环依赖； 2：setter方式注入，不会导致循环依赖
 			Object beanInstance = doCreateBean(beanName, mbdToUse, args);
 			if (logger.isTraceEnabled()) {
 				logger.trace("Finished creating instance of bean '" + beanName + "'");
@@ -566,6 +570,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			instanceWrapper = this.factoryBeanInstanceCache.remove(beanName);
 		}
 		if (instanceWrapper == null) {
+			//todo codex
+			// A与B 分别构造注入  or Setter注入
+			// todo    这里面分两种情况， 1：有参构造函数注入-->会导致循环依赖（因为当前在构造A的instance,A的构造函数是有参数的，它又依赖B的instance,此时会调DefaultSingletonBeanRegistry.getSingleton去获取（构建）B的instance,而构建B的instance又依赖A的instance----->循环依赖形成）
+			// todo                  2：setter注入（等价于无参数的构造函数）--> 不会导致循环依赖（因为会通过无参构造函数-->不依赖B的instance，去创建A的instance） ,创建完会走接下来的流程去populate对象的属性（调用A的setter方法，将B的Instance注入进去）
 			instanceWrapper = createBeanInstance(beanName, mbd, args);
 		}
 		final Object bean = instanceWrapper.getWrappedInstance();
@@ -587,27 +595,32 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				mbd.postProcessed = true;
 			}
 		}
-
+		/**
+		 *  instanceWrapper = createBeanInstance(beanName, mbd, args);
+		 *
+		 *  todo code 上面的方法通过无参构造函数得到了A的instance, 接下来调用A的Setter方法，将B的instance注入
+		 *
+		 */
 		// Eagerly cache singletons to be able to resolve circular references
 		// even when triggered by lifecycle interfaces like BeanFactoryAware.
-		boolean earlySingletonExposure = (mbd.isSingleton() && this.allowCircularReferences &&
-				isSingletonCurrentlyInCreation(beanName));
+		boolean earlySingletonExposure = (mbd.isSingleton() && this.allowCircularReferences && // todo  允许循环依赖
+				isSingletonCurrentlyInCreation(beanName)); // todo beanName正在创建中
 		if (earlySingletonExposure) {
 			if (logger.isTraceEnabled()) {
 				logger.trace("Eagerly caching bean '" + beanName +
 						"' to allow for resolving potential circular references");
 			}
 			/**
-			 * 把单例工厂放到三级缓存
+			 * 把单例工厂放到三级缓存， getEarlyBeanReference得到的是未初始化bean
 			 */
 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
 		}
 
 		// Initialize the bean instance.
 		Object exposedObject = bean;
-		try {
+		try {//todo codex  setter方式注入属性, 会继续走DefaultSingletonBeanRegistry.getSingleton获取依赖的实例
 			populateBean(beanName, mbd, instanceWrapper);
-			exposedObject = initializeBean(beanName, exposedObject, mbd);
+			exposedObject = initializeBean(beanName, exposedObject, mbd); // todo 一些初始化接口的调用，例如：afterPropertiesSet 和 aware接口的方法
 		}
 		catch (Throwable ex) {
 			if (ex instanceof BeanCreationException && beanName.equals(((BeanCreationException) ex).getBeanName())) {
@@ -1213,7 +1226,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				return instantiateBean(beanName, mbd);
 			}
 		}
-
+         // todo codex 构造方式实例化，会导致循环依赖
 		// Candidate constructors for autowiring?
 		Constructor<?>[] ctors = determineConstructorsFromBeanPostProcessors(beanClass, beanName);
 		if (ctors != null || mbd.getResolvedAutowireMode() == AUTOWIRE_CONSTRUCTOR ||

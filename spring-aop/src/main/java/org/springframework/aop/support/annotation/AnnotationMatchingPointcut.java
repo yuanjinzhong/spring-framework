@@ -179,6 +179,14 @@ public class AnnotationMatchingPointcut implements Pointcut {
 			this.annotationType = annotationType;
 		}
 
+		/**
+		 *
+		 * `isCandidateClass` 方法的目的就是为了优化性能，通过尽可能早地排除那些肯定不会被特定注解标记的类，从而避免对这些类进行不必要的注解解析操作。
+		 *
+		 * 主要是用来排斥系统类（clazz） 和系统注解（annotationType），提高性能用的
+		 * @param clazz the candidate target class
+		 * @return
+		 */
 		@Override
 		public boolean matches(Class<?> clazz) {
 			return AnnotationUtils.isCandidateClass(clazz, this.annotationType);

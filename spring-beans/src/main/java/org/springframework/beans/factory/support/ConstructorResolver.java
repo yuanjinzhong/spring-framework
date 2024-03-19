@@ -108,7 +108,8 @@ class ConstructorResolver {
 	}
 
 
-	/**
+	/** 解析 {@link  org.springframework.beans.factory.annotation.Autowired} 注解修饰的构造器注入
+	 *
 	 * "autowire constructor" (with constructor arguments by type) behavior.
 	 * Also applied if explicit constructor argument values are specified,
 	 * matching all remaining arguments with beans from the bean factory.

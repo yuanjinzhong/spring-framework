@@ -673,7 +673,7 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 			}
 			if (value != null) {
 				ReflectionUtils.makeAccessible(field);
-				field.set(bean, value);
+				field.set(bean, value);// todo set注入，bean 表示 B对象， value 表示 A的半实例化例子
 			}
 		}
 	}
