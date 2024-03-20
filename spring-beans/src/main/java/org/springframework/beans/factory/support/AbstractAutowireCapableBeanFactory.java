@@ -616,6 +616,19 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 			/**
 			 * 把单例工厂放到三级缓存， getEarlyBeanReference得到的是未初始化bean, 这个bean 可能是个代理对象
+			 *
+			 * 事实上这个lambda表达式会先执行,假设依赖关系为 A-->B-->A,这里的三级缓存是A的工厂方法
+			 *
+			 * 接下来的populateBean方法会发现依赖B,然后就去创建B,创建B的时候发现依赖A,则会去缓存里面找A,则会执行A的三级缓存工厂
+			 *
+			 * 最终B创建好了,A对象的populateBean方法也执行完了,继续执行A对象的initializeBean方法,执行BPP逻辑,其中{@link AbstractAutoProxyCreator}在创建代理时,
+			 *
+			 * 发现 A的三级缓存工厂里面已经创建过A的代理了,则不会继续创建代理(通过earlyProxyReferences控制)
+			 *
+			 * 如果有一个Bpp不走earlyProxyReferences的控制逻辑,直接创建了代理对象,则会导致,B依赖的A(三级缓存工厂代理一次)和这里的A(在代理对象之上再代理一次)不是一个对象
+			 *
+			 * 则会报循环依赖
+			 *
 			 */
 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));// 这里有代理生成逻辑
 		}
