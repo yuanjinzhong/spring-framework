@@ -625,7 +625,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			 *
 			 * 发现 A的三级缓存工厂里面已经创建过A的代理了,则不会继续创建代理(通过earlyProxyReferences控制)
 			 *
-			 * 如果有一个Bpp不走earlyProxyReferences的控制逻辑,直接创建了代理对象,则会导致,B依赖的A(三级缓存工厂代理一次)和这里的A(在代理对象之上再代理一次)不是一个对象
+			 * 如果有一个Bpp(例如@async注解对应的BPP)不走earlyProxyReferences的控制逻辑,直接创建了代理对象,则会导致,B依赖的A(三级缓存工厂代理一次)和这里的A(在代理对象之上再代理一次)不是一个对象
 			 *
 			 * 则会报循环依赖
 			 *
