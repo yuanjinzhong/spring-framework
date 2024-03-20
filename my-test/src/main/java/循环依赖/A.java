@@ -27,14 +27,23 @@ public class A {
 //		this.b = b;
 //	}
 
+
+	/**
+	 * 构造方法上添加@Lazy注解,可以解决构造器循环依赖
+	 * @param a
+	 */
 	// 导致循环依赖
 //	@Autowired
-//	public A(B b) {
+//	public A(@LazyB b) {
 //		this.b = b;
 //	}
 
 
 	/**
+	 * 尽管采用的setter方式的注入,但是由于使用了@Async注解,则会导致无法解析循环依赖(定制化的代理创建逻辑)----->前提是启动类添加{@link EnableAsync}注解,目的是添加 {@link AbstractAutoProxyCreator}
+	 *
+	 * @Transaction 注解却可以,因为它走的 {@link AbstractAutoProxyCreator} 的创建代理的逻辑(通用的创建代理的逻辑)
+	 *
 	 * {@link AsyncAnnotationBeanPostProcessor} 内部生成代理的逻辑会导致 循环依赖无法解析
 	 */
 	@Async
