@@ -27,7 +27,7 @@ import org.springframework.lang.Nullable;
 
 /**
  *
- * 给自定的bean配置代理，和{@link  AbstractAdvisorAutoProxyCreator } 不冲突
+ * 给自定的bean配置代理，和{@link  AbstractAdvisorAutoProxyCreator } 不冲突，{@link  org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator } 也是产生代理的
  *
  * Base class for {@link BeanPostProcessor} implementations that apply a
  * Spring AOP {@link Advisor} to specific beans.
@@ -92,7 +92,7 @@ public abstract class AbstractAdvisingBeanPostProcessor extends ProxyProcessorSu
 		/**
 		 * 没代理增强过，就继续生成代理
 		 *
-		 * 这里就是给spring bean 创建代理的核心了
+		 * 这里就是给spring bean 创建代理的核心了（其实不是，正经的创建代理的核心是：AbstractAutoProxyCreator类，）
 		 *
 		 * Base class for {@link BeanPostProcessor} implementations that apply a
 		 *  * Spring AOP {@link Advisor} to specific beans.

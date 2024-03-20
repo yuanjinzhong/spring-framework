@@ -171,12 +171,14 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		return getSingleton(beanName, true);
 	}
 
-	/**
+	/** 依次从 一级、二级、三级 缓存里面找对应的单例bean
+	 * 一级缓存里面是实例化且初始化好的bean
+	 * 二级、三级里面是实例化但没初始化的bean
 	 * Return the (raw) singleton object registered under the given name.
 	 * <p>Checks already instantiated singletons and also allows for an early
 	 * reference to a currently created singleton (resolving a circular reference).
 	 * @param beanName the name of the bean to look for
-	 * @param allowEarlyReference whether early references should be created or not
+	 * @param allowEarlyReference whether early references should be created or not 是否允许创建实例化但未初始化的对象
 	 * @return the registered singleton object, or {@code null} if none found
 	 */
 	@Nullable
@@ -186,7 +188,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 			synchronized (this.singletonObjects) {
 				//传说中的三级缓存的操作？？？
 				singletonObject = this.earlySingletonObjects.get(beanName); // 二级缓存
-				if (singletonObject == null && allowEarlyReference) {// 二级缓存没有，且允许循环依赖
+				if (singletonObject == null && allowEarlyReference) {// 二级缓存没有，且允许创建实例化但未初始化的对象
 					ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);// 三级缓存
 					if (singletonFactory != null) {
 						// 这里可能是代理对象,因为这个对象工厂的lambda表达式是: () -> getEarlyBeanReference(beanName, mbd, bean),而这个方法可能创建代理对象
@@ -221,14 +223,14 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 				if (logger.isDebugEnabled()) {
 					logger.debug("Creating shared instance of singleton bean '" + beanName + "'");
 				}
-				beforeSingletonCreation(beanName);//todo 检查循环依赖，不满足抛出异常
+				beforeSingletonCreation(beanName);//todo codex 检查循环依赖，不满足抛出异常
 				boolean newSingleton = false;
 				boolean recordSuppressedExceptions = (this.suppressedExceptions == null);
 				if (recordSuppressedExceptions) {
 					this.suppressedExceptions = new LinkedHashSet<>();
 				}
-				try {
-					singletonObject = singletonFactory.getObject();
+				try { // 缓存没找到bean,则去创建bean
+					singletonObject = singletonFactory.getObject();//todo codex lambda表达式，工厂方法。createbean
 					newSingleton = true;
 				}
 				catch (IllegalStateException ex) {
@@ -254,7 +256,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					afterSingletonCreation(beanName);
 				}
 				if (newSingleton) {
-					addSingleton(beanName, singletonObject);
+					addSingleton(beanName, singletonObject);// todo codex 创建完成，放入一级缓存,后面需要使用直接去一级缓存里面找
 				}
 			}
 			return singletonObject;

@@ -609,8 +609,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				registerListeners();
 
 				/**
-				 * 实例化所以剩余的单例（延迟加载的）
-				 * 遍历内部的beanDefinitionNames集合，来实例化；
+				 * 实例化所以剩余的单例（非延迟加载的）
+				 * 遍历内部的beanDefinitionNames集合（这个集合里面大部分都是用户定义的service），来实例化；
 				 * 会调用到 {@link  org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory}的创建bean方法
 				 * Instantiate all remaining (non-lazy-init) singletons.
 				 *
@@ -1012,7 +1012,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		beanFactory.freezeConfiguration();
 
 		/**
-		 * 实例化所以剩余的单例（延迟加载的）
+		 * 实例化所以剩余的单例（非延迟加载的）
 		 * 遍历内部的beanDefinitionNames集合，来实例化；
 		 * 会调用到 {@link  org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory}的创建bean方法
 		 */

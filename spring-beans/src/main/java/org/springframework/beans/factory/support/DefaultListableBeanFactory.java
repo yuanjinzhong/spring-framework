@@ -874,7 +874,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		List<String> beanNames = new ArrayList<>(this.beanDefinitionNames);
 
 
-		/**
+		/** 将所有非延迟加载的bean放入{@link DefaultSingletonBeanRegistry} 的 一级缓存里面， 三级缓存是创建bean过程中的中间态，最终只有一级缓存有值
 		 * 这里面有处理三级缓存的操作
 		 */
 		// Trigger initialization of all non-lazy singleton beans...
@@ -888,6 +888,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 					Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);
 					if (bean instanceof FactoryBean) {
 						final FactoryBean<?> factory = (FactoryBean<?>) bean;
+						// 急切的，渴望
 						boolean isEagerInit;
 						if (System.getSecurityManager() != null && factory instanceof SmartFactoryBean) {
 							isEagerInit = AccessController.doPrivileged((PrivilegedAction<Boolean>)
@@ -909,6 +910,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			}
 		}
 
+		// todo 为合适的bean执行后置初始化回调
 		// Trigger post-initialization callback for all applicable beans...
 		for (String beanName : beanNames) {
 			Object singletonInstance = getSingleton(beanName);

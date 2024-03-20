@@ -483,7 +483,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	// Implementation of relevant AbstractBeanFactory template methods
 	//---------------------------------------------------------------------
 
-	/**
+	/** {@link AbstractBeanFactory} 的核心功能分为两个：getBean 、createBean
+	 *
+	 * getBean的时候缓存里面没有，则createBean
+	 *
 	 * Central method of this class: creates a bean instance,
 	 * populates the bean instance, applies post-processors, etc.
 	 * @see #doCreateBean
@@ -492,7 +495,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	@Override
 	protected Object createBean(String beanName, RootBeanDefinition mbd, @Nullable Object[] args)
 			throws BeanCreationException {
-
+        // todo codex 缓存里面没有bean,则来手动创建
 		if (logger.isTraceEnabled()) {
 			logger.trace("Creating instance of bean '" + beanName + "'");
 		}
@@ -527,8 +530,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			throw new BeanCreationException(mbdToUse.getResourceDescription(), beanName,
 					"BeanPostProcessor before instantiation of bean failed", ex);
 		}
-
-		try {// todo 这里面分两种情况， 1：构造器注入，会导致循环依赖； 2：setter方式注入，不会导致循环依赖
+              // todo codex 开始实例化bean
+		try {// todo codex 这里面分两种情况， 1：构造器注入，会导致循环依赖； 2：setter方式注入，不会导致循环依赖
 			Object beanInstance = doCreateBean(beanName, mbdToUse, args);
 			if (logger.isTraceEnabled()) {
 				logger.trace("Finished creating instance of bean '" + beanName + "'");
@@ -605,6 +608,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// even when triggered by lifecycle interfaces like BeanFactoryAware.
 		boolean earlySingletonExposure = (mbd.isSingleton() && this.allowCircularReferences && // todo  允许循环依赖
 				isSingletonCurrentlyInCreation(beanName)); // todo beanName正在创建中
+		// 早期引用暴露
 		if (earlySingletonExposure) {
 			if (logger.isTraceEnabled()) {
 				logger.trace("Eagerly caching bean '" + beanName +
@@ -613,7 +617,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			/**
 			 * 把单例工厂放到三级缓存， getEarlyBeanReference得到的是未初始化bean, 这个bean 可能是个代理对象
 			 */
-			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
+			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));// 这里有代理生成逻辑
 		}
 
 		// Initialize the bean instance.
@@ -622,7 +626,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			populateBean(beanName, mbd, instanceWrapper);
 			// todo 一些初始化接口的调用，例如：afterPropertiesSet 和 aware接口的方法,
 			//  以及BPP的逻辑其中有一个BPP(AbstractAutoProxyCreator) 它的作用是用来创建代理对象
-			exposedObject = initializeBean(beanName, exposedObject, mbd);
+			exposedObject = initializeBean(beanName, exposedObject, mbd);// 这里的bpp（AbstractAutoProxyCreator）也有代理生成逻辑
 		}
 		catch (Throwable ex) {
 			if (ex instanceof BeanCreationException && beanName.equals(((BeanCreationException) ex).getBeanName())) {
@@ -635,9 +639,16 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		if (earlySingletonExposure) {
+			// 获取到早期暴露出去的对象（二级缓存），有代理的时候，为什么需要三级缓存，原因就在这里
 			Object earlySingletonReference = getSingleton(beanName, false);
-			if (earlySingletonReference != null) {
-				if (exposedObject == bean) {
+			// 早期暴露的对象不为null，说明出现了循环依赖
+			if (earlySingletonReference != null) { //todo 为啥要替换
+				if (exposedObject == bean) {// 地址相同，同一个对象
+					// 这个判断的意思就是指initializeBean方法里面的Bpp#postProcessAfterInitialization 回调没有进行动态代理-主要是类：AbstractAutoProxyCreator控制(有个代理标志位：earlyProxyReferences 控制着不会重复代理)，
+					// 如果没有代理那么就将早期暴露出去的对象赋值给最终暴露（生成）出去的对象，
+					// 这样就实现了早期暴露出去的对象和最终生成的对象是同一个了
+					// 但是一旦 postProcessAfterInitialization 回调生成了动态代理  那么exposedObject和bean的地址就不会相同，就会在else if的分支中，抛出循环依赖的异常
+					// 比如添加@Aysnc的场景中，会走AsyncAnnotationBeanPostProcessor的逻辑，它的postProcessAfterInitialization方法里面会生成代理（它不管代理标志位，就生成基于@Aysnc的代理对象）
 					exposedObject = earlySingletonReference;
 				}
 				else if (!this.allowRawInjectionDespiteWrapping && hasDependentBean(beanName)) {
@@ -1242,7 +1253,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		if (ctors != null) {
 			return autowireConstructor(beanName, mbd, ctors, null);
 		}
-
+         // todo codex 使用无参构造函数实例化，也就没有循环依赖的困扰
 		// No special handling: simply use no-arg constructor.
 		return instantiateBean(beanName, mbd);
 	}

@@ -50,6 +50,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+
 /**
  * {@link org.springframework.beans.factory.config.BeanPostProcessor} implementation
  * that wraps each eligible bean with an AOP proxy, delegating to specified interceptors
@@ -250,7 +251,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		Object cacheKey = getCacheKey(bean.getClass(), beanName);
 		//针对创建代理对象这件事做个标记,目的是为了代理对象重复创建(即,代理对象也得是单例)
 		// 这里的意义就是一个bean的代理对象只有一个,但是代理对象的上下文中(用advised接口表示)会有很对advice(会有很多增强,用List<advice>表示)
-		this.earlyProxyReferences.put(cacheKey, bean);
+		this.earlyProxyReferences.put(cacheKey, bean);// 这个bean 是个早起引用对象
 		return wrapIfNecessary(bean, beanName, cacheKey);
 	}
 
@@ -315,7 +316,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	public Object postProcessAfterInitialization(@Nullable Object bean, String beanName) {
 		if (bean != null) {
 			Object cacheKey = getCacheKey(bean.getClass(), beanName);
-			//循环依赖，三级会缓存的内容
+			//这个if判断的目的主要是检查bean是否在earlyProxyReferences集合中，如果在就表示该bean是一个早期引用的bean，也就是还没有完全初始化就已经被其他bean引用的对象。
+			// 因为这个bean可能还没有被完全初始化，所以不应该创建对应的代理对象。这个判断就是只有当从集合中删除的元素与传入的bean不一致（也就是该bean不是早期引用的bean）时，才会创建代理对象。
+			// todo 这个解释不一定正确
 			if (this.earlyProxyReferences.remove(cacheKey) != bean) {
 				// 生成代理对象,增强方法
 				return wrapIfNecessary(bean, beanName, cacheKey);
@@ -381,7 +384,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 			this.proxyTypes.put(cacheKey, proxy.getClass());
 			return proxy;
 		}
-        // 表示当前bean 不需要被代理
+		// 表示当前bean 不需要被代理
 		this.advisedBeans.put(cacheKey, Boolean.FALSE);
 		return bean;
 	}
@@ -469,7 +472,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 * @see #buildAdvisors
 	 */
 	protected Object createProxy(Class<?> beanClass, @Nullable String beanName,
-			@Nullable Object[] specificInterceptors, TargetSource targetSource) {
+								 @Nullable Object[] specificInterceptors, TargetSource targetSource) {
 
 		if (this.beanFactory instanceof ConfigurableListableBeanFactory) {
 			AutoProxyUtils.exposeTargetClass((ConfigurableListableBeanFactory) this.beanFactory, beanName, beanClass);
@@ -614,6 +617,6 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 */
 	@Nullable
 	protected abstract Object[] getAdvicesAndAdvisorsForBean(Class<?> beanClass, String beanName,
-			@Nullable TargetSource customTargetSource) throws BeansException;
+															 @Nullable TargetSource customTargetSource) throws BeansException;
 
 }
