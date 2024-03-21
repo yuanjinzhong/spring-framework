@@ -316,9 +316,11 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	public Object postProcessAfterInitialization(@Nullable Object bean, String beanName) {
 		if (bean != null) {
 			Object cacheKey = getCacheKey(bean.getClass(), beanName);
-			//这个if判断的目的主要是检查bean是否在earlyProxyReferences集合中，如果在就表示该bean是一个早期引用的bean，也就是还没有完全初始化就已经被其他bean引用的对象。
-			// 因为这个bean可能还没有被完全初始化，所以不应该创建对应的代理对象。这个判断就是只有当从集合中删除的元素与传入的bean不一致（也就是该bean不是早期引用的bean）时，才会创建代理对象。
-			// todo 这个解释不一定正确
+			/**
+			 * 如果一个bean在earlyProxyReferences中，则它肯定创建过，代理对象了，参考：{@link AbstractAutoProxyCreator#getEarlyBeanReference(Object, String)}
+			 * 创建过代理对象，那么这里就不会再重复包装代理对象
+			 * 如果这个bean不在earlyProxyReferences中，则正常的创建代理对象
+			 */
 			if (this.earlyProxyReferences.remove(cacheKey) != bean) {
 				// 生成代理对象,增强方法
 				return wrapIfNecessary(bean, beanName, cacheKey);

@@ -1,9 +1,11 @@
 package 循环依赖;
 
+import org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncAnnotationBeanPostProcessor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 循环依赖的demo
@@ -48,6 +50,15 @@ public class A {
 	 */
 	@Async
 	public void save() {
+
+	}
+
+	/**
+	 * 走的{@link AbstractAutoProxyCreator} 这个BPP生成代理的逻辑
+	 */
+	@Transactional
+	public void update(){
+
 
 	}
 

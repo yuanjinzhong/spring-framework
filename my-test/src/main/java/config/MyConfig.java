@@ -8,6 +8,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import service.UserService;
 import service.impl.UserServiceImpl;
 
@@ -16,6 +17,7 @@ import service.impl.UserServiceImpl;
  */
 @Configuration
 @EnableAsync
+@EnableTransactionManagement
 public class MyConfig {
 
 	@Bean
