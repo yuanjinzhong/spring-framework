@@ -398,8 +398,9 @@ public class AutowiredAnnotationBeanPostProcessor extends InstantiationAwareBean
 
 	@Override
 	public PropertyValues postProcessProperties(PropertyValues pvs, Object bean, String beanName) {
+		// todo codex 找到B的属性A
 		InjectionMetadata metadata = findAutowiringMetadata(beanName, bean.getClass(), pvs);
-		try {
+		try { //java codex 给B注入属性A
 			metadata.inject(bean, beanName, pvs);
 		}
 		catch (BeanCreationException ex) {
