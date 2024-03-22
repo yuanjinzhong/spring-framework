@@ -913,6 +913,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		// todo 为合适的bean执行后置初始化回调
 		// Trigger post-initialization callback for all applicable beans...
 		for (String beanName : beanNames) {
+			// 上面的步骤，单例bean都实例完成了
 			Object singletonInstance = getSingleton(beanName);
 			if (singletonInstance instanceof SmartInitializingSingleton) {
 				final SmartInitializingSingleton smartSingleton = (SmartInitializingSingleton) singletonInstance;

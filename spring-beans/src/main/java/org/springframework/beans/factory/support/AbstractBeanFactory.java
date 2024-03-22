@@ -262,6 +262,10 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		 * 依次从 一级、二级、三级 缓存里面找对应的单例bean
 		 * 一级缓存里面是实例化且初始化好的bean
 		 * 二级、三级里面是实例化但没初始化的bean
+		 *
+		 * 一开始肯定是get不到的，所以会走{@link AbstractAutowireCapableBeanFactory#createBean}的逻辑创建bean,
+		 *
+		 * 这个createBean的逻辑包含，实例化，属性填充，初始化（afterPropertiesSet 和 aware，执行BPP逻辑：初始化前，初始化后），
 		 */
 		// Eagerly check singleton cache for manually registered singletons.
 		Object sharedInstance = getSingleton(beanName);
