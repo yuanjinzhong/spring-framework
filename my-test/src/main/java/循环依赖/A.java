@@ -48,7 +48,7 @@ public class A {
 	 *
 	 * {@link AsyncAnnotationBeanPostProcessor} 内部生成代理的逻辑会导致 循环依赖无法解析
 	 */
-	@Async
+//	@Async
 	public void save() {
 
 	}

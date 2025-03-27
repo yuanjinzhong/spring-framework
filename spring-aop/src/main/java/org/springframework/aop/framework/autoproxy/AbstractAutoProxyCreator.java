@@ -91,6 +91,8 @@ import org.springframework.util.StringUtils;
  * @see DefaultAdvisorAutoProxyCreator
  *
  * todo 这个就是个动态的的代理的发动机
+ *
+ * codex 通常是用来给@Service  @Component 注解修饰的类生成代理对象,有advice增强才会生成代理对象
  */
 @SuppressWarnings("serial")
 public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
@@ -257,6 +259,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 
 	@Override
 	public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) {
+		// codex 为什么实力化之前要创建代理
 		Object cacheKey = getCacheKey(beanClass, beanName);
 
 		if (!StringUtils.hasLength(beanName) || !this.targetSourcedBeans.contains(beanName)) {

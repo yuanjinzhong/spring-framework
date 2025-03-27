@@ -26,8 +26,20 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.lang.Nullable;
 
 /**
+ *通常用户自定义一个BPP 如{@link MethodValidationPostProcessor}， {@code ErrorMappingAdvicePostProcessor} 见notion笔记。
+ * 自定义的BPP需要继承这个类，在自定义的BPP里面需要传入自定义的advisor
+ * advisor通常的实现类是DefaultPointcutAdvisor,它指定了 切点（pointCut）和增强（advice）逻辑
  *
- * 给自定的bean配置代理，和{@link  AbstractAdvisorAutoProxyCreator } 不冲突，{@link  org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator } 也是产生代理的
+ * 通俗一点讲，就是用户自定义了切面，可以用这个BPP来做增强，详细参考notion笔记
+ *
+ * 将符合切点条件bean生成代理对象，或者已经是代理对象的bean,将advised挂载上去
+ *
+ * ，和{@link  AbstractAdvisorAutoProxyCreator } 不冲突，{@link  org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator } 也是产生代理的
+ *
+ *
+ * {@link AbstractAutoProxyCreator} 类里面也会创建代理对象，@service @component等注解的代理对象都是它创建的，所以它里面有避免循环依赖的逻辑:earlyProxyReferences
+ *
+ * codex 通常是用来给自定义注解修饰类做切面增强： 生成代理对象，挂载 增强的advisor: 看这里 {@link AdvisedSupport#advisors}
  *
  * Base class for {@link BeanPostProcessor} implementations that apply a
  * Spring AOP {@link Advisor} to specific beans.
@@ -90,9 +102,18 @@ public abstract class AbstractAdvisingBeanPostProcessor extends ProxyProcessorSu
 		}
 
 		/**
-		 * 没代理增强过，就继续生成代理
 		 *
-		 * 这里就是给spring bean 创建代理的核心了（其实不是，正经的创建代理的核心是：AbstractAutoProxyCreator类，）
+		 * 如何bean符合条件，则生成代理对象，并且将{@link Advisor}挂在代理对象上* 放在这里{@link AdvisedSupport#advisors}
+		 * 判断是否符合条件的逻辑基于 {@link org.springframework.aop.support.AopUtils#canApply}，
+		 *
+		 * 用户自定义切面提供入口，advisor 由用户传入
+		 *
+		 * 示例：
+		 * {@code
+		 *   Pointcut pointcut = new AnnotationMatchingPointcut(this.validatedAnnotationType, true);
+		 *   this.advisor = new DefaultPointcutAdvisor(pointcut, createMethodValidationAdvice(this.validator));
+		 * }
+		 * 参考：{@link MethodValidationPostProcessor}，自定义示例 {@code ErrorMappingAdvicePostProcessor} 见notion笔记。
 		 *
 		 * Base class for {@link BeanPostProcessor} implementations that apply a
 		 *  * Spring AOP {@link Advisor} to specific beans.

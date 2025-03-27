@@ -90,7 +90,7 @@ public class AdvisedSupport extends ProxyConfig implements Advised {
 	private List<Class<?>> interfaces = new ArrayList<>();
 
 	/**
-	 * 用户定义的切面的最终形态，会放到该集合里面
+	 * codex 用户定义的切面的最终形态，会放到该集合里面
 	 * List of Advisors. If an Advice is added, it will be wrapped
 	 * in an Advisor before being added to this List.
 	 */

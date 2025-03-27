@@ -261,7 +261,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		 * 从单例bean注册器的缓存里面找bean,
 		 * 依次从 一级、二级、三级 缓存里面找对应的单例bean
 		 * 一级缓存里面是实例化且初始化好的bean
-		 * 二级、三级里面是实例化但没初始化的bean
+		 * 二级缓存 已经实例化但是未初始化的bean(又称之为早期曝光对象)
+		 * 三级缓存 早期曝光对象的工厂(ObjectFactory)
 		 *
 		 * 一开始肯定是get不到的，所以会走{@link AbstractAutowireCapableBeanFactory#createBean}的逻辑创建bean,
 		 *

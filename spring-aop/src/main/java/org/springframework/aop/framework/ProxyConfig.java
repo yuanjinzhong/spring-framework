@@ -58,7 +58,7 @@ public class ProxyConfig implements Serializable {
 	boolean exposeProxy = false;
 
 	/**
-	 * 冻结，表示该配置对象的属性不可以被改变
+	 * 冻结，表示该配置对象的属性不可以被改变，通常的意思是，代理对象不可以再继续增加advice
 	 */
 	private boolean frozen = false;
 
