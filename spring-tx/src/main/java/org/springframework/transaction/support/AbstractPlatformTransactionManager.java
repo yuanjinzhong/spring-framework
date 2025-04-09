@@ -345,7 +345,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 		// Use defaults if no transaction definition given.
 		TransactionDefinition def = (definition != null ? definition : TransactionDefinition.withDefaults());
 
-		//先获取到事务
+		//先获取到事务，以datasource为key ,从事务同步管理器里面获取 connection对象的包装
 		Object transaction = doGetTransaction();
 		boolean debugEnabled = logger.isDebugEnabled();
 
@@ -372,6 +372,8 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 		else if (def.getPropagationBehavior() == TransactionDefinition.PROPAGATION_REQUIRED ||
 				def.getPropagationBehavior() == TransactionDefinition.PROPAGATION_REQUIRES_NEW ||
 				def.getPropagationBehavior() == TransactionDefinition.PROPAGATION_NESTED) {
+			// codex 上面三个传播行为会开启新的事务，旧事务挂起，挂起的含义是：旧事务的资源都存储在SuspendedResourcesHolder中，并且与当前线程解绑
+			//codex  开启新事物的时候从dataSource获取新的链接，事务的各项元数据绑定线程,最总挂起的事务还会恢复，恢复就是从SuspendedResourcesHolder取出元数据，与线程绑定：通过事务同步管理器：TransactionSynchronizationManager
 			SuspendedResourcesHolder suspendedResources = suspend(null);
 			if (debugEnabled) {
 				logger.debug("Creating new transaction with name [" + def.getName() + "]: " + def);
@@ -380,7 +382,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 				return startTransaction(def, transaction, debugEnabled, suspendedResources);
 			}
 			catch (RuntimeException | Error ex) {
-				resume(null, suspendedResources);
+				resume(null, suspendedResources);//codex 从suspendedResources中恢复之前挂起的事务
 				throw ex;
 			}
 		}
@@ -578,17 +580,17 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 			try {
 				Object suspendedResources = null;
 				if (transaction != null) {
-					suspendedResources = doSuspend(transaction);
+					suspendedResources = doSuspend(transaction);// codex 解绑数据源 与 connection对象
 				}
 				String name = TransactionSynchronizationManager.getCurrentTransactionName();
-				TransactionSynchronizationManager.setCurrentTransactionName(null);
+				TransactionSynchronizationManager.setCurrentTransactionName(null); // codex 事务名字 解绑
 				boolean readOnly = TransactionSynchronizationManager.isCurrentTransactionReadOnly();
-				TransactionSynchronizationManager.setCurrentTransactionReadOnly(false);
+				TransactionSynchronizationManager.setCurrentTransactionReadOnly(false); // codex 事务只读状态解绑
 				Integer isolationLevel = TransactionSynchronizationManager.getCurrentTransactionIsolationLevel();
 				TransactionSynchronizationManager.setCurrentTransactionIsolationLevel(null);
 				boolean wasActive = TransactionSynchronizationManager.isActualTransactionActive();
 				TransactionSynchronizationManager.setActualTransactionActive(false);
-				return new SuspendedResourcesHolder(
+				return new SuspendedResourcesHolder( // codex事务元数据 存储到 SuspendedResourcesHolder
 						suspendedResources, suspendedSynchronizations, name, readOnly, isolationLevel, wasActive);
 			}
 			catch (RuntimeException | Error ex) {
@@ -616,7 +618,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 	 * as returned by {@code suspend} (or {@code null} to just
 	 * resume synchronizations, if any)
 	 * @see #doResume
-	 * @see #suspend
+	 * @see #suspend codex 恢复挂起的事务
 	 */
 	protected final void resume(@Nullable Object transaction, @Nullable SuspendedResourcesHolder resourcesHolder)
 			throws TransactionException {
@@ -627,7 +629,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 				doResume(transaction, suspendedResources);
 			}
 			List<TransactionSynchronization> suspendedSynchronizations = resourcesHolder.suspendedSynchronizations;
-			if (suspendedSynchronizations != null) {
+			if (suspendedSynchronizations != null) { // codex 元数据与当前线程绑定
 				TransactionSynchronizationManager.setActualTransactionActive(resourcesHolder.wasActive);
 				TransactionSynchronizationManager.setCurrentTransactionIsolationLevel(resourcesHolder.isolationLevel);
 				TransactionSynchronizationManager.setCurrentTransactionReadOnly(resourcesHolder.readOnly);
